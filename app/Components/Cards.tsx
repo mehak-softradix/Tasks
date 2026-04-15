@@ -34,12 +34,17 @@ const Cards: React.FC<CardProps> = ({
   const [showPopup, setShowPopup] = useState(false);
 
   // const [showEditModal, setShowEditModal] = useState(false);
-  const [activeCardId, setActiveCardId] = useState<string| null>(null);
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
-   
+  const [activeCard, setActiveCard] = useState<{
+    id: string;
+    top: number;
+    left: number;
+  } | null>(null);
 
-    console.log("jdj" , tasks.id)
-  console.log("All IDs:", tasks?.map((t) => t.id));
+  //   console.log("All IDs:", tasks?.map((t) => t.id));
+  // console.log("Tasks" , tasks);
+  console.log("Active Card ID:", activeCardId);
 
   const handleAddTask = () => {
     if (addTask.trim() === "") return;
@@ -142,14 +147,12 @@ const Cards: React.FC<CardProps> = ({
 
     setShowDeleteModal(false);
   };
- 
 
   return (
     <>
       {/* {activeCardId && (
         <div className="fixed inset-0  bg-black/70 backdrop-blur-sm "></div>
       )} */}
-
 
       <div
         className="  bg-gray-100 rounded-xl p-4 w-[270px]  shadow-md  max-h-[80vh]   shrink-0  flex flex-col   "
@@ -258,17 +261,13 @@ const Cards: React.FC<CardProps> = ({
             </div>
           )}
         </div>
-      
- 
+
         {/* Tasks */}
         <div className="space-y-2 overflow-y-auto">
-    
           {tasks?.map((task, index) => (
-    // console.log("Task ID:", task.id);
+            // console.log("Task ID:", task.id);
 
-          
             <div
-        
               key={task.id}
               draggable
               onDragStart={(e) => handleDragStart(e, index)}
@@ -277,12 +276,10 @@ const Cards: React.FC<CardProps> = ({
                 setDragOverIndex(index);
               }}
               onDrop={(e) => handleDrop(e, index)}
-              className={`bg-white pb-3 rounded-lg shadow-sm border-b border-gray-200 cursor-pointer relative group z-50  ${
+              className={`bg-white pb-3 rounded-lg shadow-sm border-b border-gray-200 cursor-pointer relative group  ${
                 dragOverIndex === index ? "ring-2 " : ""
-              } $`}
-              
+              }     ${activeCardId === task.id ? "z-50" : "z-0"}`}
             >
-              
               <div className="absolute top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-white/80 backdrop-blur  rounded-md shadow">
                 <button
                   onClick={(e) => {
@@ -379,6 +376,25 @@ const Cards: React.FC<CardProps> = ({
                               // setEditIndex(index);
                               // setEditText(task.text);
                               // setShowEditModal(true);
+                              const rect = (
+                                e.currentTarget as HTMLElement
+                              ).getBoundingClientRect();
+
+                              const modalWidth = 180;
+                              const gap = 10;
+
+                              let left = rect.right + gap;
+
+                              // prevent right overflow
+                              if (left + modalWidth > window.innerWidth) {
+                                left = rect.left - modalWidth - gap;
+                              }
+
+                              setActiveCard({
+                                id: task.id,
+                                top: rect.top,
+                                left,
+                              });
                               setActiveCardId(task.id);
                             }}
                           >
@@ -442,8 +458,15 @@ const Cards: React.FC<CardProps> = ({
                     {showPopup && (
                       <Popup task={task} onClose={() => setShowPopup(false)} />
                     )}
-                    <div className="relative w-3.5 h-3.5 ml-2">
+                    <div className=" flex gap-2 items-center ml-2">
+                    <div className="  relative w-3.5 h-3.5 ml-2">
                       <Image src="/images/attach.svg" alt="attach" fill />
+                       {task.attachment && task.attachment.length > 0 && (
+    <span className="text-xs text-gray-600">
+      {task.attachment.length}
+    </span>
+  )}
+                    </div>
                     </div>
                   </div>
 
@@ -489,27 +512,35 @@ const Cards: React.FC<CardProps> = ({
           
         </div> */}
 
-   {activeCardId && (
-  <>
-    {/* Backdrop */}
-    <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm z"
-      onClick={() => setActiveCardId(null)}
-    />
+        {activeCard && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              onClick={() => setActiveCardId(null)}
+            />
 
-    {/* Modal */}
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div onClick={(e) => e.stopPropagation()}>
-        <EditModal
-          taskId={activeCardId}
-          onClose={() => setActiveCardId(null)}
-        />
-      </div>
-    </div>
-  </>
-)}
-
-        
+            {/* Modal */}
+            <div className="fixed inset-0 z-50  ">
+              <div onClick={(e) => e.stopPropagation()}>
+                <EditModal
+                  // taskId={activeCardId}
+                  // onClose={() => setActiveCardId(null)}
+                  taskId={activeCard.id}
+      onClose={() => {
+        setActiveCard(null);
+        setActiveCardId(null);
+      }}
+      position={{
+        top: activeCard.top,
+        left: activeCard.left,
+      }}
+                  
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Add Card Button */}
 
