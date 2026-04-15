@@ -17,7 +17,7 @@ export interface BoardData {
 
 
 export interface Column {
-  id: number ;
+  id: string;
   title: string;
 }
 
@@ -136,6 +136,7 @@ export interface LabelDropDownProps{
 }
 
 export interface Member {
+  id: number;
   name: string;
   role: string;
   email:string;

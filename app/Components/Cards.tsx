@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { act, useState } from "react";
 import { CardProps } from "../Interafce/types";
 import DeleteModal from "./DeleteModal";
+import Image from "next/image";
+import Popup from "./Popup";
+import EditModal from "./EditModal";
 
 const Cards: React.FC<CardProps> = ({
   id,
@@ -28,6 +31,16 @@ const Cards: React.FC<CardProps> = ({
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const [showPopup, setShowPopup] = useState(false);
+
+  // const [showEditModal, setShowEditModal] = useState(false);
+  const [activeCardId, setActiveCardId] = useState<string| null>(null);
+
+   
+
+    console.log("jdj" , tasks.id)
+  console.log("All IDs:", tasks?.map((t) => t.id));
+
   const handleAddTask = () => {
     if (addTask.trim() === "") return;
 
@@ -36,6 +49,7 @@ const Cards: React.FC<CardProps> = ({
       [id]: [
         ...(prev[id] || []),
         {
+          id: Date.now().toString(),
           text: addTask,
           completed: false,
           description: "",
@@ -128,15 +142,21 @@ const Cards: React.FC<CardProps> = ({
 
     setShowDeleteModal(false);
   };
+ 
 
   return (
     <>
+      {/* {activeCardId && (
+        <div className="fixed inset-0  bg-black/70 backdrop-blur-sm "></div>
+      )} */}
+
+
       <div
-        className="  bg-gray-100 rounded-xl p-5 w-[300px]  shadow-md  max-h-[80vh]   shrink-0  flex flex-col "
+        className="  bg-gray-100 rounded-xl p-4 w-[270px]  shadow-md  max-h-[80vh]   shrink-0  flex flex-col   "
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => handleDrop(e)}
       >
-        <div className="relative flex justify-between items-center mb-3 ">
+        <div className="relative flex justify-between items-center mb-3  ">
           {/* <h2 className="text-lg font-semibold text-gray-800">{title}</h2> */}
 
           {isEditingTitle ? (
@@ -166,9 +186,12 @@ const Cards: React.FC<CardProps> = ({
             onClick={() => setShowMenu(!showMenu)}
             className="text-gray-600 hover:text-gray-800"
           >
-            <img
+            <Image
+              alt="menu"
+              width={20}
+              height={20}
               src="/images/three-dots.png"
-              className="w-5 h-5 cursor-pointer"
+              className=" cursor-pointer"
             />
           </button>
 
@@ -186,7 +209,12 @@ const Cards: React.FC<CardProps> = ({
                   }}
                   className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer"
                 >
-                  <img src="/images/protectededit.svg" className="w-4 h-4 " />
+                  <Image
+                    src="/images/protectededit.svg"
+                    alt="edit"
+                    width={20}
+                    height={20}
+                  />
                   <span className="text-sm text-black ">Edit</span>
                 </button>
 
@@ -197,12 +225,18 @@ const Cards: React.FC<CardProps> = ({
                   }}
                   className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
                 >
-                  <img src="/images/sensidelete.svg" className="w-4 h-4 " />
+                  <Image
+                    src="/images/sensidelete.svg"
+                    alt="delete"
+                    width={20}
+                    height={20}
+                  />
                   <span className="text-sm">Delete</span>
                 </button>
               </div>
             </>
           )}
+
           {showDeleteModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div
@@ -224,12 +258,18 @@ const Cards: React.FC<CardProps> = ({
             </div>
           )}
         </div>
-
+      
+ 
         {/* Tasks */}
         <div className="space-y-2 overflow-y-auto">
+    
           {tasks?.map((task, index) => (
+    // console.log("Task ID:", task.id);
+
+          
             <div
-              key={index}
+        
+              key={task.id}
               draggable
               onDragStart={(e) => handleDragStart(e, index)}
               onDragOver={(e) => {
@@ -237,10 +277,38 @@ const Cards: React.FC<CardProps> = ({
                 setDragOverIndex(index);
               }}
               onDrop={(e) => handleDrop(e, index)}
-              className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-pointer ${
+              className={`bg-white pb-3 rounded-lg shadow-sm border-b border-gray-200 cursor-pointer relative group z-50  ${
                 dragOverIndex === index ? "ring-2 " : ""
-              }`}
+              } $`}
+              
             >
+              
+              <div className="absolute top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-white/80 backdrop-blur  rounded-md shadow">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditIndex(index);
+                    setEditText(task.text);
+                  }}
+                >
+                  <Image
+                    src="/images/edit.svg"
+                    alt="edit"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+                {/* <span className="absolute top-5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
+                  Edit
+                </span> */}
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteTask(index);
+                  }}
+                ></button>
+              </div>
               {editIndex === index ? (
                 <>
                   <textarea
@@ -281,10 +349,11 @@ const Cards: React.FC<CardProps> = ({
                 </>
               ) : (
                 <>
-                  <p
+                  <div
                     className="text-sm text-gray-800 mt-1 break-words"
                     onClick={() =>
                       setSelectedTask({
+                        id: task.id,
                         text: task.text,
                         description: task.description,
                         attachment: task.attachment || [],
@@ -295,43 +364,87 @@ const Cards: React.FC<CardProps> = ({
                       })
                     }
                   >
-                      {task.attachment && task.attachment.length > 0 && (
-                    <img
-                      src={task.attachment[0].src} 
-                      alt="cover"
-                      className="w-full h-32 object-cover rounded-md mb-2"
-                    />
-                  )}
-                    {task.text}
-                  </p>
-                
-                  {task.priority && task.priority.length > 0 && (
-                    <div className="mt-2 flex gap-1 flex-wrap">
-                      {task.priority.map((p: string, i: number) => (
-                        <span
-                          key={i}
-                          className={`text-xs px-2 py-1 rounded font-medium ${
-                            p === "High Priority"
-                              ? "bg-red-400 text-white"
-                              : p === "Medium Priority"
-                                ? "bg-yellow-400 text-white"
-                                : "bg-green-400 text-white"
-                          }`}
-                        >
-                          {p}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                    {task.attachment && task.attachment.length > 0 && (
+                      <div className="w-full h-25 relative ">
+                        <Image
+                          src={task.attachment[0].src}
+                          alt="cover"
+                          fill
+                          className=" object-cover rounded-t-lg mb-2"
+                        />
+                        <div className="absolute top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex p-1 rounded-full  bg-white/80 backdrop-blur   shadow">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // setEditIndex(index);
+                              // setEditText(task.text);
+                              // setShowEditModal(true);
+                              setActiveCardId(task.id);
+                            }}
+                          >
+                            <Image
+                              src="/images/edit.svg"
+                              alt="edit"
+                              width={20}
+                              height={20}
+                            />
+                          </button>
 
-                  <div className="flex justify-end items-center mt-2">
-                    <img
-                      src="/images/download.png"
-                      className="w-5 h-5 cursor-pointer"
-                      onClick={() =>
-                        setActiveIndex(index === activeIndex ? null : index)
-                      }
-                    />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              handleDeleteTask(index);
+                            }}
+                          ></button>
+                          {/* <span className="absolute top-8 left-1/2 -translate-x-1/2  text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
+                            <EditModal />
+                          </span> */}
+                        </div>
+                      </div>
+                    )}
+
+                    {task.priority && task.priority.length > 0 && (
+                      <div className="mt-2 flex gap-1 flex-wrap px-3">
+                        {task.priority.map((p: string, i: number) => (
+                          <span
+                            key={i}
+                            className={`text-xs px-[10px] py-[2px] rounded font-semibold ${
+                              p === "High Priority"
+                                ? "bg-red-400 text-white"
+                                : p === "Medium Priority"
+                                  ? "bg-yellow-400 text-white"
+                                  : "bg-green-400 text-white"
+                            }`}
+                          >
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="px-3 py-1 font-medum text-gray-800 font-medium">
+                      {task.text}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-start items-center  px-3.5">
+                    <div className="">
+                      <Image
+                        src="/images/menu.svg"
+                        alt="checklist"
+                        width={20}
+                        height={20}
+                        className="cursor-pointer "
+                        onClick={() => setShowPopup(true)}
+                      />
+                    </div>
+
+                    {showPopup && (
+                      <Popup task={task} onClose={() => setShowPopup(false)} />
+                    )}
+                    <div className="relative w-3.5 h-3.5 ml-2">
+                      <Image src="/images/attach.svg" alt="attach" fill />
+                    </div>
                   </div>
 
                   {activeIndex === index && (
@@ -343,7 +456,12 @@ const Cards: React.FC<CardProps> = ({
                           setActiveIndex(null);
                         }}
                       >
-                        <img src="/images/protectededit.svg" />
+                        <Image
+                          src="/images/protectededit.svg"
+                          alt="edit"
+                          width={20}
+                          height={20}
+                        />
                       </button>
 
                       <button
@@ -352,7 +470,12 @@ const Cards: React.FC<CardProps> = ({
                           setActiveIndex(null);
                         }}
                       >
-                        <img src="/images/sensidelete.svg" />
+                        <Image
+                          src="/images/sensidelete.svg"
+                          alt="delete"
+                          width={20}
+                          height={20}
+                        />
                       </button>
                     </div>
                   )}
@@ -361,6 +484,32 @@ const Cards: React.FC<CardProps> = ({
             </div>
           ))}
         </div>
+
+        {/* <div className="relative top-0 ">{showEditModal && <EditModal onClose={()=> setShowEditModal(false)} />}
+          
+        </div> */}
+
+   {activeCardId && (
+  <>
+    {/* Backdrop */}
+    <div
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm z"
+      onClick={() => setActiveCardId(null)}
+    />
+
+    {/* Modal */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div onClick={(e) => e.stopPropagation()}>
+        <EditModal
+          taskId={activeCardId}
+          onClose={() => setActiveCardId(null)}
+        />
+      </div>
+    </div>
+  </>
+)}
+
+        
 
         {/* Add Card Button */}
 

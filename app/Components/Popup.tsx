@@ -13,6 +13,7 @@ import ImagePopup from "./ImagePopup";
 import ChecklistPopup from "./ChecklistPopup";
 import MemberModal from "./MemberModal";
 import ProfileModal from "./ProfileModal";
+import Image from "next/image";
 
 const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   const [text, setText] = useState(task.text);
@@ -65,11 +66,19 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   ]);
 
   const [showMemberModal, setShowMemberModal] = useState(false);
-  const [cardMembers, setCardMembers] = useState<Member[]>([]);
+  // const [cardMembers, setCardMembers] = useState<Member[]>([]);
+  const [cardMembers, setCardMembers] = useState<Member[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`members-${task.id}`);
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [hoveredMember, setHoveredMember] = useState<Member | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const checklistInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const sync = () => {
@@ -88,12 +97,27 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   }, []);
 
   useEffect(() => {
+    localStorage.setItem(`members-${task.id}`, JSON.stringify(cardMembers));
+  }, [cardMembers, task.id]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`members-${task.id}`);
+    setCardMembers(saved ? JSON.parse(saved) : []);
+  }, [task.id]);
+
+  useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height =
         textareaRef.current.scrollHeight + "px";
     }
   }, [text]);
+
+  useEffect(() => {
+    if (showInput && checklistInputRef.current) {
+      checklistInputRef.current.focus();
+    }
+  }, [showInput]);
 
   // Read files and return src, name, date
   const readFilesAsDataUrls = (files: FileList) => {
@@ -249,9 +273,12 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                 </button>
               </div>
               <div className="px-2 py-0.5 rounded border border-gray-500 text-center cursor-pointer">
-                <img
+                <Image
                   src="/images/clock.svg"
                   alt="clock"
+                  width={12}
+                  height={12}
+
                   className="w-3 h-3 inline-block mr-1 filter invert"
                 />
                 <button className="text-sm text-white cursor-pointer">
@@ -262,9 +289,12 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                 className="px-2 py-0.5 rounded border border-gray-500 text-center cursor-pointer flex"
                 onClick={() => setShowChecklistPopup(true)}
               >
-                <img
+                <Image
                   src="/images/checklist.svg"
                   alt="checklist"
+                  width={16}
+                  height={16}
+
                   className="w-4 h-4 inline-block mr-1 mt-1 filter invert"
                 />
                 <button className="text-sm text-white cursor-pointer">
@@ -276,9 +306,11 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                 className="px-2 py-0.5 rounded border border-gray-500 text-center cursor-pointer flex"
                 onClick={() => document.getElementById("fileInput")?.click()}
               >
-                <img
+                <Image
                   src="/images/attach.svg"
                   alt="attachment"
+                  width={14}
+                  height={14}
                   className="w-3.5 h-3.5 inline-block mr-1 mt-1 filter invert"
                 />
                 <button className="text-sm text-white cursor-pointer">
@@ -311,8 +343,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                       key={member.id}
                       className="flex justify-center items-center bg-blue-500 text-white text-xs font-bold w-7 h-7 rounded-full "
                       onClick={() => {
-                        setHoveredMember(member); 
-                        setShowProfileModal(true); 
+                        setHoveredMember(member);
+                        setShowProfileModal(true);
                       }}
                     >
                       {member.name
@@ -379,9 +411,11 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
             {/* Description */}
             <div className="mb-6 mt-4">
               <div className="flex items-center gap-2 text-base font-semibold text-white mb-2">
-                <img
+                <Image
                   src="/images/menu.svg"
                   alt="description"
+                  width={16}  
+                  height={16}
                   className="w-4 h-4 filter invert"
                 />
                 Description
@@ -416,9 +450,12 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
             {/* Attachments */}
             <div>
               <div className="flex items-center gap-2 text-base font-semibold text-white mb-2">
-                <img
+                <Image
                   src="/images/attach.svg"
                   alt="attachment"
+                  width={16}
+                  height={16}
+
                   className="w-4 h-4 filter invert"
                 />
                 Attachments
@@ -426,6 +463,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
               <div className="flex flex-col gap-3 mt-3">
                 {attachments.map((att, idx) => (
                   <div key={idx} className="flex flex-col gap-1 relative">
+                    <div className="">
                     <img
                       src={att.src}
                       className="w-50 h-28 object-conatin rounded-md border border-gray-400 cursor-pointer"
@@ -434,7 +472,9 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                         setShowImagePopup(true);
                       }}
                       alt={att.name}
+                      
                     />
+                    </div>
                     <div className="text-xs text-gray-300">{att.name} </div>
                     <div className="text-xs text-gray-300">{att.date} </div>
 
@@ -444,8 +484,11 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                           setShowMenu(showMenu === idx ? null : idx)
                         }
                       >
-                        <img
+                        <Image
+                          alt="menu"
                           src="/images/three-dots.svg"
+                          width={12}
+                          height={12}
                           className="w-5 h-5 filter invert"
                         />
                       </span>
@@ -454,7 +497,10 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                     {showMenu === idx && (
                       <div className="absolute right-2 top-8 bg-white shadow-md text-gray-500 rounded-md p-2 z-10">
                         <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
-                          <img
+                          <Image
+                            alt="edit"
+                            width={16}
+                            height={16}
                             src="/images/protectededit.svg"
                             className="w-4 h-4"
                           />
@@ -468,8 +514,12 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                           }}
                           className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
                         >
-                          <img
+                          <Image
+                          alt="delete"
+                          width={16}
+                          height={16}
                             src="/images/sensidelete.svg"
+                          
                             className="w-4 h-4"
                           />
                           <span className="text-sm">Delete</span>
@@ -482,9 +532,12 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
               {checklists.map((cl, clIdx) => (
                 <div key={cl.id} className="mb-4">
                   <div className="flex items-center gap-2 text-base font-semibold text-white mb-2 mt-4">
-                    <img
+                    <Image
                       src="/images/checklist.svg"
                       alt="checklist"
+                      width={16}
+                      height={16}
+
                       className="w-4 h-4 filter invert"
                     />
                     {cl.title}
@@ -608,7 +661,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                               )
                             }
                           >
-                            <img
+                            <Image
+                              alt="menu"
                               src="/images/three-dots.svg"
                               className="w-5 h-5 filter invert"
                             />
@@ -617,8 +671,9 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                           {openChecklistMenu === item.id && (
                             <div className="absolute right-2 top-8 bg-white shadow-md text-gray-500 rounded-md p-2 pr-5">
                               <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
-                                <img
+                                <Image
                                   src="/images/protectededit.svg"
+                                  alt="EDIT"
                                   className="w-4 h-4"
                                 />
                                 <span className="text-sm text-black">Edit</span>
@@ -634,8 +689,10 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                                 }}
                                 className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
                               >
-                                <img
+                                <Image
+                                
                                   src="/images/sensidelete.svg"
+                                  alt="delete"
                                   className="w-4 h-4"
                                 />
                                 <span className="text-sm">Delete</span>
@@ -650,6 +707,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                     {showInput && (
                       <>
                         <input
+                          ref={checklistInputRef}
                           type="text"
                           value={newItemText}
                           onChange={(e) => setNewItemText(e.target.value)}

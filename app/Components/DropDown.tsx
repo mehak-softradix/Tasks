@@ -3,11 +3,16 @@
 import { useState, useEffect } from "react";
 import { DropDownProps, Label } from "../Interafce/types";
 import LabelDropDown from "./LabelDropDown";
+import Image from "next/image";
 
-const DropDown = ({ priority, setPriority ,  priorities,
+const DropDown = ({
+  priority,
+  setPriority,
+  priorities,
   setPriorities,
   labels,
-  setLabels, }: DropDownProps) => {
+  setLabels,
+}: DropDownProps) => {
   const [open, setOpen] = useState(false);
   // const [priorities, setPriorities] = useState<Label[]>([]);
   const [newPriority, setNewPriority] = useState("");
@@ -82,9 +87,7 @@ const DropDown = ({ priority, setPriority ,  priorities,
         prev.filter((p) => p.title !== editingLabel.title),
       );
 
-      setPriority((prev) =>
-      prev.filter((p) => p !== editingLabel.title)
-    );
+      setPriority((prev) => prev.filter((p) => p !== editingLabel.title));
     }
 
     setShowLabelModal(false);
@@ -163,9 +166,12 @@ const DropDown = ({ priority, setPriority ,  priorities,
                       {label.title}
                     </div>
 
-                    <img
+                    <Image                
                       src="/images/edit.svg"
-                      className="w-5 h-5 filter invert cursor-pointer"
+                      className=" filter invert cursor-pointer"
+                            alt="EDIT"  
+                        width={20}  
+                        height={20}
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingLabel({ ...label, index, type: "label" });
@@ -203,20 +209,26 @@ const DropDown = ({ priority, setPriority ,  priorities,
                       }
                     }}
                   />
-                  <span className="break-words text-left w-full">
+                  <span className="wrap-break-words text-left w-full">
                     {item.title}
                   </span>
                 </div>
 
-                <img
-                  src="/images/edit.svg"
-                  className="w-5 h-5 filter invert cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingLabel({ ...item, type: "priority" });
-                    setShowLabelModal(true);
-                  }}
-                />
+                <div className="w-5 h-5">
+                  <Image
+                    src="/images/edit.svg"
+                    alt="EDIT"
+                    width={20}
+                    height={20}
+
+                    className=" filter invert cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingLabel({ ...item, type: "priority" });
+                      setShowLabelModal(true);
+                    }}
+                  />
+                </div>
               </div>
             ))}
           </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DeleteModal from "./DeleteModal";
+import Image from "next/image";
 
 interface ImagePopupProps {
   src: string;
@@ -83,9 +84,12 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
           className="px-2 py-0.5 rounded border border-[#2a2a2a]  text-center cursor-pointer flex gap-1"
           onClick={handleOpenNewTab}
         >
-          <img
+          <Image
             src="/images/download.svg"
             alt="checklist"
+            width={16}
+            height={16}
+
             className="w-4 h-4 inline-block mr-1 mt-1.5 filter invert "
           />
           <button className="text-sm text-white cursor-pointer font-medium">
@@ -96,8 +100,10 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
           className="px-2 py-0.5 rounded border border-[#2a2a2a]  text-center cursor-pointer flex gap-1 "
           onClick={handleDownload}
         >
-          <img
+          <Image
             src="/images/csvdownload.svg"
+            width={16}
+            height={16}
             alt="checklist"
             className="w-4 h-4 inline-block mr-1 mt-2  filter invert brightness-0 "
           />
@@ -109,9 +115,11 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
           className="px-2 py-0.5 rounded border border-[#2a2a2a]  text-center cursor-pointer flex gap-1"
           onClick={onClose}
         >
-          <img
+          <Image
             src="/images/image.svg"
             alt="checklist"
+            width={16}
+            height={16}
             className="w-3 h-3 inline-block mr-1 mt-2  filter invert "
           />
           <button className="text-sm text-white cursor-pointer font-medium">

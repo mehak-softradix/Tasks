@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import AddMemberPopup from "./AddMemberPopup";
 import { NavbarProps } from "../Interafce/types";
+import Image from "next/image";
 
 const getInitial = (name: string) => {
   const words = name.split(" ");
@@ -79,10 +80,12 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
             )}
           </div>
 
-          <img
+          <Image
             src="/images/three-dots.png"
             alt="menu"
-            className="w-6 h-6 cursor-pointer"
+            width={20}
+            height={20}
+            className=" cursor-pointer"
           />
         </div>
       </div>
