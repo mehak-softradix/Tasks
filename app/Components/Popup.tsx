@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from "react";
 import {
   PopupProps,
@@ -8,7 +10,7 @@ import {
   Member,
 } from "../Interafce/types";
 import DeleteModal from "./DeleteModal";
-import DropDown from "./DropDown";
+import DropDown from "./PriorityDropDown";
 import ImagePopup from "./ImagePopup";
 import ChecklistPopup from "./ChecklistPopup";
 import MemberModal from "./MemberModal";
@@ -24,7 +26,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   const [editingDesc, setEditingDesc] = useState(false);
   const [showMenu, setShowMenu] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [priority, setPriority] = useState(task.priority || "Low Priority");
+  const [priority, setPriority] = useState(task.priority || []);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showChecklistPopup, setShowChecklistPopup] = useState(false);
@@ -51,7 +53,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   const [originalChecklists, setOriginalChecklists] = useState(
     task.checklist || [],
   );
-  const [showInput, setShowInput] = useState(false);
+  // const [showInput, setShowInput] = useState(false);
+  const [showInput, setShowInput] = useState<number | null>(null);
   const [newItemText, setNewItemText] = useState("");
   const [comment, setComment] = useState("");
   const [priorities, setPriorities] = useState<Label[]>([]);
@@ -79,6 +82,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checklistInputRef = useRef<HTMLInputElement>(null);
+
+  
 
   useEffect(() => {
     const sync = () => {
@@ -159,11 +164,14 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
     setOriginalChecklists(checklists);
     setEditingItem(null);
   };
+
+  const idCounter = useRef(0);
   const addChecklistItem = (clIdx: number) => {
     if (newItemText.trim() === "") return;
 
     const newItem: ChecklistItem = {
-      id: Date.now(),
+      // id: Date.now(),
+      id: ++idCounter.current, // simple incremental ID generator
       text: newItemText,
       completed: false,
     };
@@ -179,7 +187,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
 
     setChecklists(updatedChecklists);
     setNewItemText("");
-    setShowInput(false);
+    setShowInput(null);
   };
   // Save changes helper
   const handleSave = () => {
@@ -202,7 +210,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
     }
   };
 
-  const handleRemove = (id: number) => {
+  const handleRemove = (id: string) => {
     setCardMembers(cardMembers.filter((m) => m.id !== id));
   };
 
@@ -662,6 +670,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                             }
                           >
                             <Image
+                            width={20}
+                            height={20}
                               alt="menu"
                               src="/images/three-dots.svg"
                               className="w-5 h-5 filter invert"
@@ -672,6 +682,9 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                             <div className="absolute right-2 top-8 bg-white shadow-md text-gray-500 rounded-md p-2 pr-5">
                               <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
                                 <Image
+                                  width={16}
+                                  height={16}
+                                  
                                   src="/images/protectededit.svg"
                                   alt="EDIT"
                                   className="w-4 h-4"
@@ -690,7 +703,9 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                                 className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
                               >
                                 <Image
-                                
+                                width={16}
+                                height={16}
+
                                   src="/images/sensidelete.svg"
                                   alt="delete"
                                   className="w-4 h-4"
@@ -704,7 +719,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                     ))}
 
                     {/* Add new checklist item */}
-                    {showInput && (
+                    {showInput === clIdx && (
                       <>
                         <input
                           ref={checklistInputRef}
@@ -733,7 +748,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
 
                           <button
                             className="px-3 py-1 rounded-md "
-                            onClick={() => setShowInput(false)}
+                            onClick={() => setShowInput(null)}
                           >
                             Cancel
                           </button>
@@ -741,10 +756,10 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                       </>
                     )}
 
-                    {!showInput && (
+                    {!showInput && showInput !== clIdx && (
                       <button
                         className="bg-[#333333] px-3 py-1 rounded-md w-30"
-                        onClick={() => setShowInput(true)}
+                        onClick={() => setShowInput(clIdx)}
                       >
                         Add an item
                       </button>

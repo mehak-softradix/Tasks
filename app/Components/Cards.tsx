@@ -129,7 +129,7 @@ const Cards: React.FC<CardProps> = ({
 
     setColumnOrder((prev) =>
       prev.map((col) =>
-        col.id === Number(id) ? { ...col, title: newTitle } : col,
+        col.id === id ? { ...col, title: newTitle } : col,
       ),
     );
 
@@ -143,7 +143,7 @@ const Cards: React.FC<CardProps> = ({
       return newBoard;
     });
 
-    setColumnOrder((prev) => prev.filter((col) => col.id !== Number(id)));
+    setColumnOrder((prev) => prev.filter((col) => col.id !== (id)));
 
     setShowDeleteModal(false);
   };
@@ -265,7 +265,7 @@ const Cards: React.FC<CardProps> = ({
         {/* Tasks */}
         <div className="space-y-2 overflow-y-auto">
           {tasks?.map((task, index) => (
-            // console.log("Task ID:", task.id);
+       
 
             <div
               key={task.id}
@@ -357,6 +357,7 @@ const Cards: React.FC<CardProps> = ({
                         priority: task.priority || [],
                         checklist: task.checklist || [],
                         index,
+                        completed: task.completed,
                         colId: id,
                       })
                     }
@@ -369,7 +370,7 @@ const Cards: React.FC<CardProps> = ({
                           fill
                           className=" object-cover rounded-t-lg mb-2"
                         />
-                        <div className="absolute top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex p-1 rounded-full  bg-white/80 backdrop-blur   shadow">
+                        <div className="absolute  p-1 top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center  rounded-full  bg-white/80 backdrop-blur   shadow">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -403,6 +404,7 @@ const Cards: React.FC<CardProps> = ({
                               alt="edit"
                               width={20}
                               height={20}
+                              className="ml-[1px]"
                             />
                           </button>
 
@@ -454,19 +456,19 @@ const Cards: React.FC<CardProps> = ({
                         onClick={() => setShowPopup(true)}
                       />
                     </div>
-
+{/* 
                     {showPopup && (
                       <Popup task={task} onClose={() => setShowPopup(false)} />
-                    )}
+                    )} */}
                     <div className=" flex gap-2 items-center ml-2">
-                    <div className="  relative w-3.5 h-3.5 ml-2">
-                      <Image src="/images/attach.svg" alt="attach" fill />
-                       {task.attachment && task.attachment.length > 0 && (
-    <span className="text-xs text-gray-600">
-      {task.attachment.length}
-    </span>
-  )}
-                    </div>
+                      <div className="  relative w-3.5 h-3.5 ml-2">
+                        <Image src="/images/attach.svg" alt="attach" fill />
+                        {task.attachment && task.attachment.length > 0 && (
+                          <span className="text-[15px] font-medium text-gray-600 absolute -top-1 left-5 px-1 ">
+                            {task.attachment.length}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -516,7 +518,7 @@ const Cards: React.FC<CardProps> = ({
           <>
             {/* Backdrop */}
             <div
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-black/90   z-40"
               onClick={() => setActiveCardId(null)}
             />
 
@@ -527,15 +529,14 @@ const Cards: React.FC<CardProps> = ({
                   // taskId={activeCardId}
                   // onClose={() => setActiveCardId(null)}
                   taskId={activeCard.id}
-      onClose={() => {
-        setActiveCard(null);
-        setActiveCardId(null);
-      }}
-      position={{
-        top: activeCard.top,
-        left: activeCard.left,
-      }}
-                  
+                  onClose={() => {
+                    setActiveCard(null);
+                    setActiveCardId(null);
+                  }}
+                  position={{
+                    top: activeCard.top,
+                    left: activeCard.left,
+                  }}
                 />
               </div>
             </div>

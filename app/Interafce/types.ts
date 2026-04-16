@@ -1,20 +1,18 @@
-
 // Trello Board Interface
 
 export interface Task {
-id:string;
+  id: string;
   text: string;
   description: string;
   attachment?: Attachment[];
   completed: boolean;
-   priority?: string[];
-   checklist?:Checklist[];
+  priority?: string[];
+  checklist?: Checklist[];
 }
 
 export interface BoardData {
-    [key: string]: Task[];
+  [key: string]: Task[];
 }
-
 
 export interface Column {
   id: string;
@@ -44,26 +42,28 @@ export interface CardProps {
     targetIndex?: number,
   ) => void;
 
-   setColumnOrder: React.Dispatch<React.SetStateAction<Column[]>>;
-   setSelectedTask: React.Dispatch<React.SetStateAction<{
-   
-    text: string;
-    description?: string;
-    attachment?: string[];
-    priority?: string[];
-    index: number;
+  setColumnOrder: React.Dispatch<React.SetStateAction<Column[]>>;
+  setSelectedTask: React.Dispatch<
+    React.SetStateAction<{
+      id: string;
+      text: string;
+      description: string;
+      attachment?: Attachment[];
+      priority?: string[];
+      checklist?: Checklist[];
+      completed: boolean;
+      index: number;
       colId: string;
-  } | null>>;
+    } | null>
+  >;
 }
 
-// Delete Modal Interface
 
 export interface DeleteModalProps {
   title?: string;
   description?: string;
   onClose: () => void;
   onConfirm: () => void;
-  
 }
 
 //Popup Interface
@@ -71,25 +71,30 @@ export interface DeleteModalProps {
 export interface PopupProps {
   task: Task;
   onClose: () => void;
-    // onUpdate: (newText: string) => void;
-  onUpdate: (  newText: string, newDescription: string , newAttachment: Attachment[] , priority?:string[] , checklist?:Checklist[]  ) => void;
+  // onUpdate: (newText: string) => void;
+  onUpdate: (
+    newText: string,
+    newDescription: string,
+    newAttachment: Attachment[],
+    priority?: string[],
+    checklist?: Checklist[],
+  ) => void;
 }
 
-
- export interface ChecklistItem {
+export interface ChecklistItem {
   id: number;
   text: string;
   completed: boolean;
 }
 
- export interface Checklist {
+export interface Checklist {
   id: number;
   title: string;
   items: ChecklistItem[];
 }
 
 // Checklist Props
- export interface ChecklistPopupProps {
+export interface ChecklistPopupProps {
   onClose: () => void;
   onAddChecklist: (title: string) => void;
 }
@@ -97,15 +102,15 @@ export interface PopupProps {
 //DropDown Props
 
 // export interface DropDownProps {
-//   priority: string[];                          
-//   // setPriority: (value: string[]) => void; 
-//   setPriority: React.Dispatch<React.SetStateAction<string[]>>;        
-//   priorities: Label[];                        
-//   labels: Label[];                            
-//   onEditLabel: (newLabel: Label, index: number) => void;   
-//   onEditPriority: (newPriority: Label) => void;            
-//   onAddPriority: (newPriority: Label) => void;            
-//   onAddLabel: (newLabel: Label) => void;                 
+//   priority: string[];
+//   // setPriority: (value: string[]) => void;
+//   setPriority: React.Dispatch<React.SetStateAction<string[]>>;
+//   priorities: Label[];
+//   labels: Label[];
+//   onEditLabel: (newLabel: Label, index: number) => void;
+//   onEditPriority: (newPriority: Label) => void;
+//   onAddPriority: (newPriority: Label) => void;
+//   onAddLabel: (newLabel: Label) => void;
 // }
 
 export interface DropDownProps {
@@ -118,6 +123,7 @@ export interface DropDownProps {
 
   labels: Label[];
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
+  onClose?: () => void;
 }
 
 export type Label = {
@@ -127,33 +133,31 @@ export type Label = {
 
 // LabelDropDown Props
 
-export interface LabelDropDownProps{
+export interface LabelDropDownProps {
   onClose: () => void;
   onSave: (label: Label) => void;
-   onDelete?: () => void;
-  initialData: Label|null;
-  
+  onDelete?: () => void;
+  initialData: Label | null;
 }
 
 export interface Member {
-  id: number;
+  id: string;
   name: string;
   role: string;
-  email:string;
-
+  email: string;
 }
 
- export interface NavbarProps {
+export interface NavbarProps {
   members: Member[];
   setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }
 
 export interface AddMemberPopupProps {
-  onClose:() => void;
+  onClose: () => void;
 }
 
 export interface MemberModalProps {
-   cardMembers: Member[];
+  cardMembers: Member[];
   setCardMembers: React.Dispatch<React.SetStateAction<Member[]>>;
   onClose: () => void;
 }

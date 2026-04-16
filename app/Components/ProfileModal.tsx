@@ -9,7 +9,7 @@ const ProfileModal = ({
 }: {
   member: Member;
   onClose: () => void;
-  onRemove: (memberId: number) => void;
+  onRemove: (memberId: string) => void;
 }) => {
   const initials = member.name
     .split(" ")

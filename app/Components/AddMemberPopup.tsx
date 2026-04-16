@@ -7,7 +7,7 @@ import { AddMemberPopupProps } from "../Interafce/types";
 
 const AddMemberPopup = ({onClose} : AddMemberPopupProps) => {
   const [members, setMembers] = useState<Member[]>([
-    { name: "Effie", role: "Admin" },
+    { id: "1", name: "Effie", role: "Admin" , email: "effie@example.com"  },
   ]);
 
   const [email, setEmail] = useState("");
@@ -17,7 +17,8 @@ const AddMemberPopup = ({onClose} : AddMemberPopupProps) => {
 
     setMembers([
       ...members,
-      { name: email.split("@")[0], role: "Member" },
+      { id: Date.now().toString(), name: email.split("@")[0], role: "Member" , email: email },
+
     ]);
 
     setEmail("");

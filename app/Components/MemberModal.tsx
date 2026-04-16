@@ -1,18 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { MemberModalProps } from "../Interafce/types";
-type Member = {
-  id: number;
-  name: string;
-};
+import { MemberModalProps , Member } from "../Interafce/types";
+import { on } from "events";
+
 
 const boardMembers: Member[] = [
-  { id: 1, name: "Mehak Verma" },
-  { id: 2, name: "Mehakpreet Kaur" },
-  { id: 3, name: "Karan Sharma" },
-  { id: 4, name: "Ritika Rana" },
-  { id: 5, name: "Raajev Kumar" },
+  { id: "1", name: "Mehak Verma", role: "" , email: ""},
+  { id: "2", name: "Mehakpreet Kaur", role: "" , email: ""},
+  { id: "3", name: "Karan Sharma", role: "" , email: ""},
+  { id: "4", name: "Ritika Rana", role: "" , email: ""},
+  { id: "5", name: "Raajev Kumar", role: "" , email: ""},
 
 ];
 
@@ -37,12 +35,14 @@ const MemberModal = ({onClose , cardMembers , setCardMembers}: MemberModalProps)
 
   const addMember = (member: Member) => {
     if (!cardMembers.find((m) => m.id === member.id)) {
-      setCardMembers([...cardMembers, member]);
+      setCardMembers([...cardMembers, member]); 
     }
+    onClose();
   };
 
-  const removeMember = (id: number) => {
+  const removeMember = (id: string) => {
     setCardMembers(cardMembers.filter((m) => m.id !== id));
+    onClose();
   };
 
   return (

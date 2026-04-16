@@ -5,13 +5,14 @@ import { DropDownProps, Label } from "../Interafce/types";
 import LabelDropDown from "./LabelDropDown";
 import Image from "next/image";
 
-const DropDown = ({
+const PriorityDropDown = ({
   priority,
   setPriority,
   priorities,
   setPriorities,
   labels,
   setLabels,
+  
 }: DropDownProps) => {
   const [open, setOpen] = useState(false);
   // const [priorities, setPriorities] = useState<Label[]>([]);
@@ -98,6 +99,7 @@ const DropDown = ({
 
   return (
     <div>
+      
       <div
         className="flex gap-2 relative cursor-pointer"
         onClick={() => setOpen(!open)}
@@ -128,7 +130,7 @@ const DropDown = ({
         </div>
 
         {open && (
-          <div className="absolute top-10 right-0 bg-[#333333] shadow-md rounded-md w-50 z-10 p-2 overflow-y-auto max-h-[40vh]">
+          <div className="absolute top-10  bg-[#333333] shadow-md rounded-md w-50 z-10 p-2 overflow-y-auto max-h-[40vh]">
             {/* Add new priority */}
             <div className="mt-2 flex gap-1">
               <input
@@ -275,4 +277,4 @@ const DropDown = ({
   );
 };
 
-export default DropDown;
+export default PriorityDropDown;

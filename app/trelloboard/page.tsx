@@ -29,25 +29,27 @@ function TrelloPage() {
   } | null>(null);
 
   const [selectedTask, setSelectedTask] = useState<{
+    id: string;
     text: string;
-    description?: string;
+    description: string;
     attachment?: Attachment[];
     checklist?: Checklist[];
-    priority?: string;
+    priority?: string[];
+    completed: boolean;
     index: number;
     colId: string;
   } | null>(null);
 
-  const [dragColumn, setDragColumn] = useState<number | null>(null);
+  const [dragColumn, setDragColumn] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   
 
   const [members, setMembers] = useState([
-    { id: 1, name: "Mehak Verma" },
-    { id: 2, name: "Mehakpreet Kaur" },
-    { id: 3, name: "Karan Sharam" },
-    { id: 4, name: "Ritika Rana" },
-    { id: 5, name: "Raajev Kumar" },
+    { id: "1", name: "Mehak Verma" , role:"", email: ""},
+    { id: "2", name: "Mehakpreet Kaur" , role:"", email: ""},
+    { id: "3", name: "Karan Sharam" , role:"", email: ""},
+    { id: "4", name: "Ritika Rana" , role:"", email: ""},
+    { id: "5", name: "Raajev Kumar" , role:"", email: ""},
   ]);
 
   useEffect(() => {
@@ -150,13 +152,13 @@ function TrelloPage() {
     });
   };
 
-  const handleColumnDragStart = (colId: number) => {
+  const handleColumnDragStart = (colId: string) => {
     if (dragItem) return;
 
     setDragColumn(colId);
   };
 
-  const handleColumnDragOver = (e: React.DragEvent, targetId: number) => {
+  const handleColumnDragOver = (e: React.DragEvent, targetId: string) => {
     e.preventDefault();
 
     if (!dragColumn || dragColumn === targetId) return;
@@ -235,6 +237,7 @@ function TrelloPage() {
                             attachment: newAttachment,
                             priority: newPriority,
                             checklist: newChecklists,
+                            
                           }
                         : null,
                     );

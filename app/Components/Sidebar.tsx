@@ -13,12 +13,13 @@ const Sidebar = ({ setBoard, setColumnOrder }: Props) => {
   const [newColumn, setNewColumn] = useState("");
   const [showInput, setShowInput] = useState(false);
 
+  
   const handleAddColumn = () => {
 
     if (!newColumn.trim()) return;
 
     const newColObj: Column = {
-      id:  Date.now(),
+      id:  crypto.randomUUID(),
       title: newColumn,
     };
 

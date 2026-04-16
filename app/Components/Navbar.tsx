@@ -28,6 +28,7 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
   return (
     <div>
       <div className="bg-black/10 backdrop-blur-md p-1 rounded-lg mb-5 relative z-10">
@@ -40,21 +41,7 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
               Members
             </h2>
 
-            {/* {members.map((member) => (
-              <div
-                key={member.id}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold border-2 border-white -ml-2"
-              >
-                {getInitial(member.name)}
-              </div>
-            ))}
-
-            <button
-              className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-lg cursor-pointer ml-1"
-              onClick={() => setShowModal(!showModal)}
-            >
-              +
-            </button> */}
+  
 
             <div className="flex gap-2">
               {members.map((member) => (
@@ -66,10 +53,12 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
                 </span>
               ))}
 
-              {/* + button */}
-              <span className="flex justify-center items-center bg-[#504c4c] text-white text-xs font-bold w-7 h-7 rounded-full cursor-pointer">
+          
+              <button className="flex justify-center items-center bg-[#504c4c] text-white text-xs font-bold w-7 h-7 rounded-full cursor-pointer"
+                onClick={() => setShowModal(!showModal)}
+              > 
                 +
-              </span>
+              </button>
             </div>
 
             {/* Popup */}
