@@ -15,11 +15,11 @@ const PriorityDropDown = ({
   
 }: DropDownProps) => {
   const [open, setOpen] = useState(false);
-  // const [priorities, setPriorities] = useState<Label[]>([]);
+;
   const [newPriority, setNewPriority] = useState("");
 
   const [showLabelModal, setShowLabelModal] = useState(false);
-  // const [labels, setLabels] = useState<Label[]>([]);
+  
   const [editingLabel, setEditingLabel] = useState<
     (Label & { index?: number; type?: "label" | "priority" }) | null
   >(null);
@@ -95,7 +95,7 @@ const PriorityDropDown = ({
     setEditingLabel(null);
   };
 
-  const selected = priority[0];
+  // const selected = priority[0];
 
   return (
     <div>

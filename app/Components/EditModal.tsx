@@ -22,7 +22,7 @@ const EditModal = ({
   taskId: string;
   position?: { top: number; left: number };
 }) => {
-  // console.log("Editing task:", taskId);
+  
   return (
     <div>
       
@@ -37,12 +37,7 @@ const EditModal = ({
         left: position?.left,
       }}
     >
-        {/* <button
-          className="absolute top-2 right-2 text-white hover:text-gray-300 "
-          onClick={onClose}
-        >
-          ✕
-        </button> */}
+       
         {options.map((item, index) => (
           <div
             key={index}

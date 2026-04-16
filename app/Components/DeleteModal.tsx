@@ -6,10 +6,10 @@ const DeleteModal = ({ onClose, onConfirm , title , description}: DeleteModalPro
     <div>
       
       <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-  <div className="bg-white w-[90%] max-w-[420px] rounded-2xl shadow-xl p-6 relative">
+  <div className="bg-white w-[90%] max-w-105 rounded-2xl shadow-xl p-6 relative">
 
 
-    <div className="absolute top-0 left-0 right-0 h-[60px] rounded-t-2xl bg-gradient-to-b from-[#FFE2E2] to-white"></div>
+    <div className="absolute top-0 left-0 right-0 h-15 rounded-t-2xl bg-gradient-to-b from-[#FFE2E2] to-white"></div>
 
     <div className="relative text-center mt-4">
       <h2 className="text-xl font-semibold text-[#1E1D27]">

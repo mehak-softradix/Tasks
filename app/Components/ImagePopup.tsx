@@ -63,10 +63,13 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
       onClick={onClose}
     >
       <div className="relative" onClick={(e) => e.stopPropagation()}>
-        <img
+        <Image
           src={src}
+           alt="attachment"
+           
           className="w-full h-[60vh] rounded-lg object-cover mt-15  "
-          alt="attachment"
+          width={700}
+          height={500}
         />
       </div>
 

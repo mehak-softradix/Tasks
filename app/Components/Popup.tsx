@@ -53,7 +53,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   const [originalChecklists, setOriginalChecklists] = useState(
     task.checklist || [],
   );
-  // const [showInput, setShowInput] = useState(false);
+
   const [showInput, setShowInput] = useState<number | null>(null);
   const [newItemText, setNewItemText] = useState("");
   const [comment, setComment] = useState("");
@@ -69,7 +69,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
   ]);
 
   const [showMemberModal, setShowMemberModal] = useState(false);
-  // const [cardMembers, setCardMembers] = useState<Member[]>([]);
   const [cardMembers, setCardMembers] = useState<Member[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(`members-${task.id}`);
@@ -82,8 +81,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checklistInputRef = useRef<HTMLInputElement>(null);
-
-  
 
   useEffect(() => {
     const sync = () => {
@@ -117,6 +114,12 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
         textareaRef.current.scrollHeight + "px";
     }
   }, [text]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (showInput && checklistInputRef.current) {
@@ -238,9 +241,11 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
           </button>
 
           {attachments.length > 0 && (
-            <img
+            <Image
               src={attachments[0].src}
               alt={attachments[0].name}
+              width={800}
+              height={300}
               className="w-full h-[15vh] mt-2 rounded-lg object-contain cursor-pointer"
               onClick={() => {
                 setCurrentImage(attachments[0]);
@@ -286,7 +291,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                   alt="clock"
                   width={12}
                   height={12}
-
                   className="w-3 h-3 inline-block mr-1 filter invert"
                 />
                 <button className="text-sm text-white cursor-pointer">
@@ -302,7 +306,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                   alt="checklist"
                   width={16}
                   height={16}
-
                   className="w-4 h-4 inline-block mr-1 mt-1 filter invert"
                 />
                 <button className="text-sm text-white cursor-pointer">
@@ -422,7 +425,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                 <Image
                   src="/images/menu.svg"
                   alt="description"
-                  width={16}  
+                  width={16}
                   height={16}
                   className="w-4 h-4 filter invert"
                 />
@@ -463,7 +466,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                   alt="attachment"
                   width={16}
                   height={16}
-
                   className="w-4 h-4 filter invert"
                 />
                 Attachments
@@ -472,16 +474,17 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                 {attachments.map((att, idx) => (
                   <div key={idx} className="flex flex-col gap-1 relative">
                     <div className="">
-                    <img
-                      src={att.src}
-                      className="w-50 h-28 object-conatin rounded-md border border-gray-400 cursor-pointer"
-                      onClick={() => {
-                        setCurrentImage(att);
-                        setShowImagePopup(true);
-                      }}
-                      alt={att.name}
-                      
-                    />
+                      <Image
+                        src={att.src}
+                        width={200}
+                        height={100}
+                        className="w-50 h-28 object-conatin rounded-md border border-gray-400 cursor-pointer"
+                        onClick={() => {
+                          setCurrentImage(att);
+                          setShowImagePopup(true);
+                        }}
+                        alt={att.name}
+                      />
                     </div>
                     <div className="text-xs text-gray-300">{att.name} </div>
                     <div className="text-xs text-gray-300">{att.date} </div>
@@ -523,11 +526,10 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                           className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
                         >
                           <Image
-                          alt="delete"
-                          width={16}
-                          height={16}
+                            alt="delete"
+                            width={16}
+                            height={16}
                             src="/images/sensidelete.svg"
-                          
                             className="w-4 h-4"
                           />
                           <span className="text-sm">Delete</span>
@@ -545,7 +547,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                       alt="checklist"
                       width={16}
                       height={16}
-
                       className="w-4 h-4 filter invert"
                     />
                     {cl.title}
@@ -556,11 +557,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                     {cl.items.map((item) => (
                       <div
                         key={item.id}
-                        // className={`flex items-center justify-between p-2 rounded ${
-                        //   item.completed
-                        //     ? "line-through text-gray-400"
-                        //     : "text-white"
-                        // }`}
                         className={`flex items-center justify-between p-2 rounded ${
                           item.completed &&
                           !(
@@ -590,11 +586,10 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                                 },
                               );
                               setChecklists(updatedChecklists);
-                              // handleSave();
                             }}
                             className="mt-1"
                           />
-                          {/* <span>{item.text}</span> */}
+
                           {editingItem?.itemId === item.id &&
                           editingItem?.clIdx === clIdx ? (
                             <div className="flex flex-col w-full ">
@@ -670,8 +665,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                             }
                           >
                             <Image
-                            width={20}
-                            height={20}
+                              width={20}
+                              height={20}
                               alt="menu"
                               src="/images/three-dots.svg"
                               className="w-5 h-5 filter invert"
@@ -684,7 +679,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                                 <Image
                                   width={16}
                                   height={16}
-                                  
                                   src="/images/protectededit.svg"
                                   alt="EDIT"
                                   className="w-4 h-4"
@@ -703,9 +697,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                                 className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
                               >
                                 <Image
-                                width={16}
-                                height={16}
-
+                                  width={16}
+                                  height={16}
                                   src="/images/sensidelete.svg"
                                   alt="delete"
                                   className="w-4 h-4"
@@ -728,6 +721,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                           onChange={(e) => setNewItemText(e.target.value)}
                           placeholder="Add an item..."
                           className="px-2 py-1.5 rounded bg-[#1f1f1f] border border-gray-500 text-white text-sm  focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          autoFocus
                           onKeyDown={(e) => {
                             if (
                               e.key === "Enter" &&
@@ -775,17 +769,6 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                   name={currentImage.name}
                   onClose={() => setShowImagePopup(false)}
                   onDelete={() => {
-                    // const index = attachments.findIndex(
-                    //   (att) => att.src === currentImage.src
-                    // );
-
-                    // if (index !== -1) {
-                    //   const updatedAttachments = attachments.filter(
-                    //     (_, i) => i !== index
-                    //   );
-                    //   setAttachments(updatedAttachments);
-                    // }
-
                     setShowImagePopup(false);
                     setCurrentImage(null);
                   }}
@@ -878,7 +861,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
             <div className="flex flex-col gap-4 mt-3">
               {activity.map((a, i) => (
                 <div key={i} className="flex gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-400 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-8 h-8 rounded-full bg-blue-400 shrink-0 flex items-center justify-center text-white text-xs font-bold">
                     {a.initials}
                   </div>
                   <div>

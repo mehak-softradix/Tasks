@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 
 import { ChecklistPopupProps } from "../Interafce/types";
@@ -6,7 +8,7 @@ const ChecklistPopup: React.FC<ChecklistPopupProps> = ({ onClose, onAddChecklist
   const [title, setTitle] = useState("Checklist");
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60">
       <div className="bg-[#252525] w-[320px] rounded-md shadow-lg p-4 text-white">
         <div className="flex items-center mb-4 relative">
           <h1 className="text-base font-semibold text-gray-300 w-full text-center">

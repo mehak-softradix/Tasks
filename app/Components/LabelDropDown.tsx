@@ -65,7 +65,7 @@
   
 
     return (
-      <div className="absolute top-10 right-0 z-20">
+      <div className="absolute top-10  z-20">
         <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
           <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
             Edit label
@@ -80,7 +80,7 @@
 
           {/* Preview */}
           <div
-            className="w-full text-sm px-3 py-2 rounded mb-4 text-center w-30"
+            className="w-full text-sm px-3 py-2 rounded mb-4 text-center "
             style={{ backgroundColor: selectedColor || "#232323" }}
           >
             {title}
@@ -92,7 +92,7 @@
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             rows={2}
-            className="w-full mt-1 mb-4 px-2 py-1 rounded bg-[#1f1f1f] border border-gray-600 outline-none text-sm break-words"
+            className="w-full mt-1 mb-4 px-2 py-1 rounded bg-[#1f1f1f] border border-gray-600 outline-none text-sm wrap-break-words"
           />
 
           <p className="text-xs text-gray-400 mb-2">Select a color</p>

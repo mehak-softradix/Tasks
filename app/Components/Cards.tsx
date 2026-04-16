@@ -1,6 +1,6 @@
 "use client";
 
-import { act, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { CardProps } from "../Interafce/types";
 import DeleteModal from "./DeleteModal";
 import Image from "next/image";
@@ -33,7 +33,6 @@ const Cards: React.FC<CardProps> = ({
 
   const [showPopup, setShowPopup] = useState(false);
 
-  // const [showEditModal, setShowEditModal] = useState(false);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
   const [activeCard, setActiveCard] = useState<{
@@ -42,9 +41,9 @@ const Cards: React.FC<CardProps> = ({
     left: number;
   } | null>(null);
 
-  //   console.log("All IDs:", tasks?.map((t) => t.id));
-  // console.log("Tasks" , tasks);
-  console.log("Active Card ID:", activeCardId);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+ 
 
   const handleAddTask = () => {
     if (addTask.trim() === "") return;
@@ -115,22 +114,8 @@ const Cards: React.FC<CardProps> = ({
   const handleEditColumn = () => {
     if (newTitle.trim() === "") return;
 
-    // setBoard((prev) => {
-    //   const newBoard = { ...prev };
-    //   const columnData = newBoard[id];
-    //   delete newBoard[id];
-    //   newBoard[newTitle] = columnData;
-    //   return newBoard;
-    // });
-
-    // setColumnOrder((prev) =>
-    //   prev.map((col) => (col === id ? newTitle : col)),
-    // );
-
     setColumnOrder((prev) =>
-      prev.map((col) =>
-        col.id === id ? { ...col, title: newTitle } : col,
-      ),
+      prev.map((col) => (col.id === id ? { ...col, title: newTitle } : col)),
     );
 
     setIsEditingTitle(false);
@@ -143,27 +128,28 @@ const Cards: React.FC<CardProps> = ({
       return newBoard;
     });
 
-    setColumnOrder((prev) => prev.filter((col) => col.id !== (id)));
+    setColumnOrder((prev) => prev.filter((col) => col.id !== id));
 
     setShowDeleteModal(false);
   };
 
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, [isEditingTitle]);
+
   return (
     <>
-      {/* {activeCardId && (
-        <div className="fixed inset-0  bg-black/70 backdrop-blur-sm "></div>
-      )} */}
-
       <div
         className="  bg-gray-100 rounded-xl p-4 w-[270px]  shadow-md  max-h-[80vh]   shrink-0  flex flex-col   "
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => handleDrop(e)}
       >
         <div className="relative flex justify-between items-center mb-3  ">
-          {/* <h2 className="text-lg font-semibold text-gray-800">{title}</h2> */}
-
           {isEditingTitle ? (
             <input
+              ref={titleInputRef}
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               onBlur={handleEditColumn}
@@ -265,8 +251,6 @@ const Cards: React.FC<CardProps> = ({
         {/* Tasks */}
         <div className="space-y-2 overflow-y-auto">
           {tasks?.map((task, index) => (
-       
-
             <div
               key={task.id}
               draggable
@@ -295,9 +279,6 @@ const Cards: React.FC<CardProps> = ({
                     height={20}
                   />
                 </button>
-                {/* <span className="absolute top-5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
-                  Edit
-                </span> */}
 
                 <button
                   onClick={(e) => {
@@ -374,9 +355,7 @@ const Cards: React.FC<CardProps> = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              // setEditIndex(index);
-                              // setEditText(task.text);
-                              // setShowEditModal(true);
+
                               const rect = (
                                 e.currentTarget as HTMLElement
                               ).getBoundingClientRect();
@@ -415,9 +394,6 @@ const Cards: React.FC<CardProps> = ({
                               handleDeleteTask(index);
                             }}
                           ></button>
-                          {/* <span className="absolute top-8 left-1/2 -translate-x-1/2  text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
-                            <EditModal />
-                          </span> */}
                         </div>
                       </div>
                     )}
@@ -456,10 +432,7 @@ const Cards: React.FC<CardProps> = ({
                         onClick={() => setShowPopup(true)}
                       />
                     </div>
-{/* 
-                    {showPopup && (
-                      <Popup task={task} onClose={() => setShowPopup(false)} />
-                    )} */}
+
                     <div className=" flex gap-2 items-center ml-2">
                       <div className="  relative w-3.5 h-3.5 ml-2">
                         <Image src="/images/attach.svg" alt="attach" fill />
@@ -510,10 +483,6 @@ const Cards: React.FC<CardProps> = ({
           ))}
         </div>
 
-        {/* <div className="relative top-0 ">{showEditModal && <EditModal onClose={()=> setShowEditModal(false)} />}
-          
-        </div> */}
-
         {activeCard && (
           <>
             {/* Backdrop */}
@@ -526,8 +495,6 @@ const Cards: React.FC<CardProps> = ({
             <div className="fixed inset-0 z-50  ">
               <div onClick={(e) => e.stopPropagation()}>
                 <EditModal
-                  // taskId={activeCardId}
-                  // onClose={() => setActiveCardId(null)}
                   taskId={activeCard.id}
                   onClose={() => {
                     setActiveCard(null);

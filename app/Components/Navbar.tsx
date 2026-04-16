@@ -13,7 +13,7 @@ const getInitial = (name: string) => {
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
 };
 
-const Navbar = ({ members, setMembers }: NavbarProps) => {
+const Navbar = ({ members }: NavbarProps) => {
   const [showModal, setShowModal] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,6 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
   return (
     <div>
       <div className="bg-black/10 backdrop-blur-md p-1 rounded-lg mb-5 relative z-10">
@@ -41,8 +40,6 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
               Members
             </h2>
 
-  
-
             <div className="flex gap-2">
               {members.map((member) => (
                 <span
@@ -53,10 +50,10 @@ const Navbar = ({ members, setMembers }: NavbarProps) => {
                 </span>
               ))}
 
-          
-              <button className="flex justify-center items-center bg-[#504c4c] text-white text-xs font-bold w-7 h-7 rounded-full cursor-pointer"
+              <button
+                className="flex justify-center items-center bg-[#504c4c] text-white text-xs font-bold w-7 h-7 rounded-full cursor-pointer"
                 onClick={() => setShowModal(!showModal)}
-              > 
+              >
                 +
               </button>
             </div>

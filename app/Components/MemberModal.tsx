@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { MemberModalProps , Member } from "../Interafce/types";
-import { on } from "events";
+
 
 
 const boardMembers: Member[] = [
@@ -25,9 +25,7 @@ const getInitials = (name: string) => {
 
 const MemberModal = ({onClose , cardMembers , setCardMembers}: MemberModalProps) => {
   const [search, setSearch] = useState("");
-  // const [cardMembers, setCardMembers] = useState<Member[]>([
-  //   { id: 10, name: "Mehak" },
-  // ]);
+
 
   const filteredMembers = boardMembers.filter((m) =>
     m.name.toLowerCase().includes(search.toLowerCase())
