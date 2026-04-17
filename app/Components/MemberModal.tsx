@@ -29,8 +29,7 @@ const MemberModal = ({
     onClose();
   };
 
-  console.log("Card Members:", cardMembers);
-  console.log("Board Members:", boardMembers);  
+
   return (
     <div className="absolute top-60 left-70 right-0 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
       {/* Header */}

@@ -6,6 +6,10 @@ import DeleteModal from "./DeleteModal";
 import Image from "next/image";
 import Popup from "./Popup";
 import EditModal from "./EditModal";
+import { useRouter } from "next/navigation";
+import PriorityDropDown from "./PriorityDropDown";
+
+
 
 const Cards: React.FC<CardProps> = ({
   id,
@@ -35,6 +39,8 @@ const Cards: React.FC<CardProps> = ({
 
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
+  const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
+
   const [activeCard, setActiveCard] = useState<{
     id: string;
     top: number;
@@ -43,7 +49,9 @@ const Cards: React.FC<CardProps> = ({
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
- 
+  const router = useRouter();
+
+console.log("priorityDropdownOpen:", priorityDropdownOpen);
 
   const handleAddTask = () => {
     if (addTask.trim() === "") return;
@@ -133,7 +141,21 @@ const Cards: React.FC<CardProps> = ({
     setShowDeleteModal(false);
   };
 
-  
+  const handleOpenCard = (task , index) => {
+  setSelectedTask({
+    id: task.id,
+    text: task.text,
+    description: task.description,
+    attachment: task.attachment || [],
+    priority: task.priority || [],
+    checklist: task.checklist || [],
+    index,
+    completed: task.completed,
+    colId: id,
+  });
+
+  router.replace(`?taskId=${task.id}`);
+};
 
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
@@ -331,8 +353,8 @@ const Cards: React.FC<CardProps> = ({
                 <>
                   <div
                     className="text-sm text-gray-800 mt-1 break-words"
-                    onClick={() =>
-                      setSelectedTask({
+                    onClick={() => {
+                      const selected = {
                         id: task.id,
                         text: task.text,
                         description: task.description,
@@ -342,7 +364,11 @@ const Cards: React.FC<CardProps> = ({
                         index,
                         completed: task.completed,
                         colId: id,
-                      })
+                      };
+                      setSelectedTask(selected);
+                      // router.replace(`taskId?${task.id}`);
+                      router.replace(`?taskId=${task.id}`);
+                    }
                     }
                   >
                     {task.attachment && task.attachment.length > 0 && (
@@ -502,6 +528,13 @@ const Cards: React.FC<CardProps> = ({
                     setActiveCard(null);
                     setActiveCardId(null);
                   }}
+                    onOpenCard={() => {
+    const task = tasks.find(t => t.id === activeCard.id);
+    if (task) handleOpenCard(task);
+  }}
+   onEditLabels={() => {
+    setPriorityDropdownOpen(true); 
+  }}
                   position={{
                     top: activeCard.top,
                     left: activeCard.left,
@@ -509,8 +542,19 @@ const Cards: React.FC<CardProps> = ({
                 />
               </div>
             </div>
+            {priorityDropdownOpen && (
+  <PriorityDropDown
+    priority={[]}
+    setPriority={() => {}}
+    priorities={[]}
+    setPriorities={() => {}}
+    labels={[]}
+    setLabels={() => {}}
+  />
+)}
           </>
         )}
+
 
         {/* Add Card Button */}
 

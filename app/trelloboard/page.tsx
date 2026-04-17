@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,  } from "react";
+
 import Cards from "../Components/Cards";
 import Sidebar from "../Components/Sidebar";
 import { BoardData, Column, Attachment, Checklist, Member } from "../Interafce/types";
 import Popup from "../Components/Popup";
 import Navbar from "../Components/Navbar";
 import ScreenDrag from "../Components/ScreenDrag";
+import { useSearchParams } from "next/navigation";
 
 function TrelloPage() {
   const [board, setBoard] = useState<BoardData>({
@@ -40,9 +42,32 @@ function TrelloPage() {
     colId: string;
   } | null>(null);
 
+  console.log("Selected Task:", selectedTask);
+
   const [dragColumn, setDragColumn] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("taskId");
 
+useEffect(() => {
+  if (!taskId) return;
+
+  for (const colId in board) {
+    const index = board[colId].findIndex((t) => t.id === taskId);
+
+    if (index !== -1) {
+      const task = board[colId][index];
+
+      setSelectedTask({
+        ...task,
+        index,
+        colId,
+      });
+                                                                                                                                                                                                                               
+      break;
+    }
+  }
+}, [taskId, board]);
 
   const [members, setMembers] = useState<Member[]>(() => {
   if (typeof window !== "undefined") {
@@ -152,6 +177,7 @@ function TrelloPage() {
             <ScreenDrag>
               {selectedTask && (
                 <Popup
+                key={selectedTask.id}
                   task={selectedTask}
                   members={members}
                   onClose={() => setSelectedTask(null)}

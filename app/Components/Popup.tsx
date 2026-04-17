@@ -10,12 +10,15 @@ import {
   Member,
 } from "../Interafce/types";
 import DeleteModal from "./DeleteModal";
-import DropDown from "./PriorityDropDown";
+
 import ImagePopup from "./ImagePopup";
 import ChecklistPopup from "./ChecklistPopup";
 import MemberModal from "./MemberModal";
 import ProfileModal from "./ProfileModal";
 import Image from "next/image";
+
+import { useRouter } from "next/navigation";
+import PriorityDropDown from "./PriorityDropDown";
 
 const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   const [text, setText] = useState(task.text);
@@ -50,9 +53,9 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     clIdx: number;
     itemId: number;
   } | null>(null);
-  const [originalChecklists, setOriginalChecklists] = useState(
-    task.checklist || [],
-  );
+  // const [originalChecklists, setOriginalChecklists] = useState(
+  //   task.checklist || [],
+  // );
 
   const [showInput, setShowInput] = useState<number | null>(null);
   const [newItemText, setNewItemText] = useState("");
@@ -78,9 +81,12 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [hoveredMember, setHoveredMember] = useState<Member | null>(null);
+  const [editingValue, setEditingValue] = useState<string>("");
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checklistInputRef = useRef<HTMLInputElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const sync = () => {
@@ -120,6 +126,12 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
       textareaRef.current.focus();
     }
   }, []);
+
+  // useEffect(() => {
+  //   if (editingItem && editTextareaRef.current) {
+  //     editTextareaRef.current.focus();
+  //   }
+  // }, [editingItem]);
 
   useEffect(() => {
     if (showInput && checklistInputRef.current) {
@@ -161,20 +173,30 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
       ),
     );
   };
+  const saveChecklistItem = () => {
+    const updatedChecklists = checklists.map((cl, idx) => {
+      if (idx !== editingItem?.clIdx) return cl;
 
-  const handleChecklistSave = () => {
-    handleSave(); // already sends checklists
-    setOriginalChecklists(checklists);
+      return {
+        ...cl,
+        items: cl.items.map((i) =>
+          i.id === editingItem?.itemId ? { ...i, text: editingValue } : i,
+        ),
+      };
+    });
+
+    setChecklists(updatedChecklists);
+
     setEditingItem(null);
   };
 
   const idCounter = useRef(0);
+
   const addChecklistItem = (clIdx: number) => {
     if (newItemText.trim() === "") return;
 
     const newItem: ChecklistItem = {
-      // id: Date.now(),
-      id: ++idCounter.current, // simple incremental ID generator
+      id: ++idCounter.current,
       text: newItemText,
       completed: false,
     };
@@ -196,9 +218,9 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   const handleSave = () => {
     onUpdate(text, description, attachments, priority, checklists);
   };
-  useEffect(() => {
-    setOriginalChecklists(task.checklist || []);
-  }, [task]);
+  // useEffect(() => {
+  //   setOriginalChecklists(task.checklist || []);
+  // }, [task]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -217,13 +239,19 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     setCardMembers(cardMembers.filter((m) => m.id !== id));
   };
 
+  const handleClose = () => {
+    onClose();
+
+    router.replace("/trelloboard");
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       // onClick={onClose}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
-          onClose();
+          handleClose();
         }
       }}
     >
@@ -234,7 +262,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
         {/* HEADER */}
         <div className="relative shrink-0">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute right-2 top-2 bg-[#2a2a2a] text-white shadow rounded-full w-7 h-7 flex items-center justify-center text-sm hover:bg-gray-800"
           >
             X
@@ -268,7 +296,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Enter title..."
                 className="w-full text-lg font-semibold text-white outline-none pb-1 mt-3 bg-[#2a2a2a] resize-none overflow-hidden"
-                autoFocus
+                // autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && e.ctrlKey) {
                     e.preventDefault();
@@ -394,7 +422,8 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                 <p className="text-sm font-semibold text-gray-300 mb-2">
                   Priority
                 </p>
-                <DropDown
+
+                <PriorityDropDown
                   priority={priority}
                   setPriority={setPriority}
                   priorities={priorities}
@@ -509,15 +538,15 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                     {showMenu === idx && (
                       <div className="absolute right-2 top-10 bg-white shadow-md text-gray-500 rounded-md  z-10">
                         {/* <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
-                          <Image
-                            alt="edit"
-                            width={16}
-                            height={16}
-                            src="/images/protectededit.svg"
-                            className="w-4 h-4"
-                          />
-                          <span className="text-sm text-black">Editt</span>
-                        </button> */}
+                            <Image
+                              alt="edit"
+                              width={16}
+                              height={16}
+                              src="/images/protectededit.svg"
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm text-black">Editt</span>
+                          </button> */}
                         <button
                           onClick={() => {
                             setSelectedIndex(idx);
@@ -596,38 +625,19 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                             <div className="flex flex-col w-full ">
                               <textarea
                                 // type="text"
-                                value={item.text}
-                                onChange={(e) => {
-                                  const updatedChecklists = checklists.map(
-                                    (cl, idx) => {
-                                      if (idx !== clIdx) return cl;
-
-                                      return {
-                                        ...cl,
-                                        items: cl.items.map((i) =>
-                                          i.id === item.id
-                                            ? { ...i, text: e.target.value }
-                                            : i,
-                                        ),
-                                      };
-                                    },
-                                  );
-
-                                  setChecklists(updatedChecklists);
-                                }}
-                                onBlur={() => setEditingItem(null)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    setEditingItem(null);
-                                  }
-                                }}
+                                ref={editTextareaRef}
+                                autoFocus
+                                value={editingValue}
+                                onChange={(e) =>
+                                  setEditingValue(e.target.value)
+                                }
                                 className="bg-[#1f1f1f] text-white px-2 py-1 rounded outline-none w-full focus:ring-1 focus: ring-blue-400"
                               />
                               <div className="flex gap-1 mt-2">
                                 <button
                                   className="px-4 py-1 rounded-md  bg-blue-400 text-gray-900 font-medium"
                                   // onClick={() => addChecklistItem(clIdx)}
-                                  onClick={handleChecklistSave}
+                                  onClick={saveChecklistItem}
                                 >
                                   Save
                                 </button>
@@ -635,7 +645,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                                 <button
                                   className="px-3 py-1 rounded-md"
                                   onClick={() => {
-                                    setChecklists(originalChecklists);
+                                    // setChecklists(originalChecklists);
                                     setEditingItem(null);
                                   }}
                                 >
@@ -645,9 +655,10 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                             </div>
                           ) : (
                             <span
-                              onClick={() =>
-                                setEditingItem({ clIdx, itemId: item.id })
-                              }
+                              onClick={() => {
+                                setEditingItem({ clIdx, itemId: item.id });
+                                setEditingValue(item.text);
+                              }}
                               className="cursor-pointer "
                             >
                               {item.text}
@@ -854,7 +865,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                     setComment("");
                   }
                 }}
-                autoFocus
+                // autoFocus
               />
             </div>
 

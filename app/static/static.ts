@@ -1,3 +1,4 @@
+import { act } from "react";
 
   export const colors = [
     "#065f46",
@@ -33,8 +34,8 @@
   ];
 
   export const options = [
-  { label: "Open card", icon: "/images/opencard.svg" },
-  { label: "Edit labels", icon: "/images/label.svg" },
+  { label: "Open card", icon: "/images/opencard.svg" , action: "open" },
+  { label: "Edit labels", icon: "/images/label.svg" , action: "Edit labels" },
   { label: "Change members", icon: "/images/user.svg" },
   { label: "Change cover", icon: "/images/image.svg" },
   { label: "Edit dates", icon: "/images/clock.svg" },

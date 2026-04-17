@@ -6,12 +6,28 @@ const EditModal = ({
   onClose,
 
   position,
+  onOpenCard,
+  onEditLabels,
+
 }: {
   onClose: () => void;
   taskId: string;
   position?: { top: number; left: number };
+  onOpenCard: () => void;
+  onEditLabels: () => void;
 }) => {
-  
+
+  const handleOptionClick = (item: any) => {
+  if (item.action === "open") {
+    onOpenCard(); 
+  }
+  if (item.label === "Edit labels") {
+    onEditLabels();
+  }
+
+  onClose(); 
+};
+ 
   return (
     <div>
       
@@ -30,6 +46,7 @@ const EditModal = ({
         {options.map((item, index) => (
           <div
             key={index}
+                onClick={() => handleOptionClick(item)}
             className="flex gap-2 px-3 py-1 mt-1 bg-[#3a3939] border border-[#3f3e3e] text-[15px] font-medium rounded text-white whitespace-nowrap cursor-pointer w-max"
           >
             <Image
