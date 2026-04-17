@@ -1,39 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
-import { MemberModalProps , Member } from "../Interafce/types";
+import { MemberModalProps, Member, } from "../Interafce/types";
+import { getInitials  } from "../static/static";
 
-
-
-const boardMembers: Member[] = [
-  { id: "1", name: "Mehak Verma", role: "" , email: ""},
-  { id: "2", name: "Mehakpreet Kaur", role: "" , email: ""},
-  { id: "3", name: "Karan Sharma", role: "" , email: ""},
-  { id: "4", name: "Ritika Rana", role: "" , email: ""},
-  { id: "5", name: "Raajev Kumar", role: "" , email: ""},
-
-];
-
-const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-};
-
-const MemberModal = ({onClose , cardMembers , setCardMembers}: MemberModalProps) => {
+const MemberModal = ({
+  onClose,
+  cardMembers,
+  setCardMembers,
+  members: boardMembers,
+}: MemberModalProps) => {
   const [search, setSearch] = useState("");
 
-
-  const filteredMembers = boardMembers.filter((m) =>
-    m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMembers = (boardMembers || []).filter((m) =>
+    (m?.name ?? "").toLowerCase().includes(search.toLowerCase()),
+  )
+  .filter((m) => !cardMembers.some((cm) => cm.id === m.id));
 
   const addMember = (member: Member) => {
     if (!cardMembers.find((m) => m.id === member.id)) {
-      setCardMembers([...cardMembers, member]); 
+      setCardMembers([...cardMembers, member]);
     }
     onClose();
   };
@@ -43,19 +29,14 @@ const MemberModal = ({onClose , cardMembers , setCardMembers}: MemberModalProps)
     onClose();
   };
 
+  console.log("Card Members:", cardMembers);
+  console.log("Board Members:", boardMembers);  
   return (
-    
-
-    <div
-      className="absolute top-60 left-70 right-0 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto"
-    >
+    <div className="absolute top-60 left-70 right-0 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-sm font-semibold">Members</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white"
-        >
+        <button onClick={onClose} className="text-gray-400 hover:text-white">
           ✕
         </button>
       </div>
@@ -97,7 +78,9 @@ const MemberModal = ({onClose , cardMembers , setCardMembers}: MemberModalProps)
 
       {/* Board Members */}
       <div>
-        <p className="text-sm font-semibold text-gray-400 mb-2">Board members</p>
+        <p className="text-sm font-semibold text-gray-400 mb-2">
+          Board members
+        </p>
 
         {filteredMembers.map((member) => (
           <div

@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import DeleteModal from "./DeleteModal";
 import Image from "next/image";
+import { ImagePopupProps } from "../Interafce/types";
 
-interface ImagePopupProps {
-  src: string;
-  addedAt: string;
-  name: string;
-  onClose: () => void;
-  onDelete: () => void;
-}
 
 const ImagePopup: React.FC<ImagePopupProps> = ({
   src,

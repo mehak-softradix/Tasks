@@ -5,42 +5,42 @@ import React, { useState } from "react";
 import { Member } from "../Interafce/types";
 import { AddMemberPopupProps } from "../Interafce/types";
 
-const AddMemberPopup = ({onClose} : AddMemberPopupProps) => {
-  const [members, setMembers] = useState<Member[]>([
-    { id: "1", name: "Effie", role: "Admin" , email: "effie@example.com"  },
-  ]);
-
+const AddMemberPopup = ({
+  onClose,
+  members,
+  setMembers,
+}: AddMemberPopupProps) => {
   const [email, setEmail] = useState("");
 
   const handleAddMember = () => {
     if (!email) return;
 
-    setMembers([
-      ...members,
-      { id: Date.now().toString(), name: email.split("@")[0], role: "Member" , email: email },
+    const newMember: Member = {
+      id: Date.now().toString(),  
+      name: email.split("@")[0],
+      role: "Member",
+      email: email,
+    };
 
-    ]);
-
+    setMembers([...members, newMember]);
     setEmail("");
   };
 
   return (
     <div className="absolute top-5 right-4 z-50">
       <div className="bg-[#302f2f] w-[320px] rounded-md shadow-lg p-4 text-white">
-        
-        
         <div className="flex items-center relative mb-4">
-        <h1 className="text-sm font-semibold text-gray-300 text-center w-full mb-3">
-          Share board
-        </h1>
+          <h1 className="text-sm font-semibold text-gray-300 text-center w-full mb-3">
+            Share board
+          </h1>
           <button
             className="absolute right-0 text-gray-400 hover:text-white"
-           onClick={onClose}
+            onClick={onClose}
           >
             ✕
           </button>
-</div>
-      
+        </div>
+
         <div className="flex gap-2 mb-3">
           <input
             type="text"
@@ -58,25 +58,19 @@ const AddMemberPopup = ({onClose} : AddMemberPopupProps) => {
         </div>
 
         {/* Create Link */}
-        
+
         {/* Members List */}
         <div className="space-y-2">
           {members.map((member, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between"
-            >
+            <div key={member.id} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-          
                 <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-sm font-bold">
                   {member.name.charAt(0).toUpperCase()}
                 </div>
 
                 <div>
                   <p className="text-sm">{member.name}</p>
-                  <p className="text-xs text-gray-400">
-                    Workspace member
-                  </p>
+                  <p className="text-xs text-gray-400">Workspace member</p>
                 </div>
               </div>
 

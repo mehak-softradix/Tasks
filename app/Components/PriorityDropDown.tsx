@@ -95,7 +95,7 @@ const PriorityDropDown = ({
     setEditingLabel(null);
   };
 
-  // const selected = priority[0];
+  ;
 
   return (
     <div>

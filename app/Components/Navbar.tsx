@@ -5,15 +5,9 @@ import AddMemberPopup from "./AddMemberPopup";
 import { NavbarProps } from "../Interafce/types";
 import Image from "next/image";
 
-const getInitial = (name: string) => {
-  const words = name.split(" ");
-  if (words.length === 1) {
-    return words[0].charAt(0).toUpperCase();
-  }
-  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
-};
 
-const Navbar = ({ members }: NavbarProps) => {
+
+const Navbar = ({ members, setMembers }: NavbarProps) => {
   const [showModal, setShowModal] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -41,12 +35,19 @@ const Navbar = ({ members }: NavbarProps) => {
             </h2>
 
             <div className="flex gap-2">
+            
+
               {members.map((member) => (
                 <span
                   key={member.id}
                   className="flex justify-center items-center bg-blue-500 text-white text-xs font-bold w-7 h-7 rounded-full"
                 >
-                  {getInitial(member.name)}
+                  {member.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase()}
                 </span>
               ))}
 
@@ -61,7 +62,11 @@ const Navbar = ({ members }: NavbarProps) => {
             {/* Popup */}
             {showModal && (
               <div ref={popupRef} className="absolute right-0 top-12">
-                <AddMemberPopup onClose={() => setShowModal(false)} />
+                <AddMemberPopup
+                  onClose={() => setShowModal(false)}
+                  members={members}
+                  setMembers={setMembers}
+                />
               </div>
             )}
           </div>

@@ -133,6 +133,8 @@ const Cards: React.FC<CardProps> = ({
     setShowDeleteModal(false);
   };
 
+  
+
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -349,7 +351,7 @@ const Cards: React.FC<CardProps> = ({
                           src={task.attachment[0].src}
                           alt="cover"
                           fill
-                          className=" object-cover rounded-t-lg mb-2"
+                          className=" object-cover rounded-t-lg"
                         />
                         <div className="absolute  p-1 top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center  rounded-full  bg-white/80 backdrop-blur   shadow">
                           <button
@@ -399,11 +401,11 @@ const Cards: React.FC<CardProps> = ({
                     )}
 
                     {task.priority && task.priority.length > 0 && (
-                      <div className="mt-2 flex gap-1 flex-wrap px-3">
+                      <div className=" flex gap-1 flex-wrap px-3">
                         {task.priority.map((p: string, i: number) => (
                           <span
                             key={i}
-                            className={`text-xs px-[10px] py-[2px] rounded font-semibold ${
+                            className={`text-xs px-[8px] py-[2px] rounded font-semibold mt-2.5 ${
                               p === "High Priority"
                                 ? "bg-red-400 text-white"
                                 : p === "Medium Priority"

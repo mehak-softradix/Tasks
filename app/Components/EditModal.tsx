@@ -1,21 +1,10 @@
 import Image from "next/image";
+import { options } from "../static/static";
 
-const options = [
-  { label: "Open card", icon: "/images/opencard.svg" },
-  { label: "Edit labels", icon: "/images/label.svg" },
-  { label: "Change members", icon: "/images/user.svg" },
-  { label: "Change cover", icon: "/images/image.svg" },
-  { label: "Edit dates", icon: "/images/clock.svg" },
-  { label: "Move", icon: "/images/right-arrow.png" },
-  { label: "Copy card", icon: "/images/copy.svg" },
-  { label: "Copy link", icon: "/images/link.svg" },
-  { label: "Mirror", icon: "/images/opencard.svg" },
-  { label: "Archive", icon: "/images/archive.svg" },
-];
 
 const EditModal = ({
   onClose,
-  taskId,
+
   position,
 }: {
   onClose: () => void;

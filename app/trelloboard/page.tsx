@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Cards from "../Components/Cards";
 import Sidebar from "../Components/Sidebar";
-import { BoardData, Column, Attachment, Checklist } from "../Interafce/types";
+import { BoardData, Column, Attachment, Checklist, Member } from "../Interafce/types";
 import Popup from "../Components/Popup";
 import Navbar from "../Components/Navbar";
 import ScreenDrag from "../Components/ScreenDrag";
@@ -42,16 +42,19 @@ function TrelloPage() {
 
   const [dragColumn, setDragColumn] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  
 
-  const [members, setMembers] = useState([
-    { id: "1", name: "Mehak Verma" , role:"", email: ""},
-    { id: "2", name: "Mehakpreet Kaur" , role:"", email: ""},
-    { id: "3", name: "Karan Sharam" , role:"", email: ""},
-    { id: "4", name: "Ritika Rana" , role:"", email: ""},
-    { id: "5", name: "Raajev Kumar" , role:"", email: ""},
-  ]);
 
+  const [members, setMembers] = useState<Member[]>(() => {
+  if (typeof window !== "undefined") {
+    try {
+      const saved = localStorage.getItem("members");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}); 
   useEffect(() => {
     const saveBoard = localStorage.getItem("board");
     const savedOrder = localStorage.getItem("columnOrder");
@@ -67,59 +70,9 @@ function TrelloPage() {
     localStorage.setItem("columnOrder", JSON.stringify(columnOrder));
   }, [board, columnOrder]);
 
-
-
-  // const isMouseDownRef = React.useRef(false);
-  // const startXRef = React.useRef(0);
-  // const startScrollLeftRef = React.useRef(0);
-
-  // useEffect(() => {
-  //   const el = scrollRef.current;
-  //   if (!el) return;
-  //   // if (dragColumn || dragItem) return;
-
-  //   const handleMouseDown = (e: MouseEvent) => {
-  //     if (e.button !== 0) return;
-
-  //     const target = e.target as HTMLElement;
-
-  //     if (target.closest('[draggable="true"]')) return;
-
-  //     isMouseDownRef.current = true;
-  //     startXRef.current = e.clientX;
-  //     startScrollLeftRef.current = el.scrollLeft;
-
-  //     console.log("mousedown fired at:", e.clientX, "scrollLeft:", el.scrollLeft);
-
-  //     // e.preventDefault();
-  //   };
-
-  //   const handleMouseMove = (e: MouseEvent) => {
-  //     if (!isMouseDownRef.current) return;
-
-  //       console.log("mousemove fired");
-
-  //     const deltaX = e.clientX - startXRef.current;
-  //     el.scrollLeft = startScrollLeftRef.current - deltaX;
-  //       console.log("new scrollLeft:", el.scrollLeft);
-
-  //   };
-
-  //   const handleMouseUp = () => {
-  //     isMouseDownRef.current = false;
-  //   };
-
-  //   el.addEventListener("mousedown", handleMouseDown);
-  //   // window.addEventListener("mousedown", handleMouseDown);
-  //   window.addEventListener("mousemove", handleMouseMove);
-  //   window.addEventListener("mouseup", handleMouseUp);
-
-  //   return () => {
-  //     el.removeEventListener("mousedown", handleMouseDown);
-  //     window.removeEventListener("mousemove", handleMouseMove);
-  //     window.removeEventListener("mouseup", handleMouseUp);
-  //   };
-  // }, []);
+    useEffect(() => {
+    localStorage.setItem("members", JSON.stringify(members));
+  }, [members]);
 
   const moveTask = (
     from: string,
@@ -190,9 +143,7 @@ function TrelloPage() {
       <div className="flex  h-screen p-5 pl-0 gap-2 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <Sidebar setBoard={setBoard} setColumnOrder={setColumnOrder} />
 
-
         <div className="relative flex-1 rounded-lg overflow-hidden">
-        
           <div className="absolute inset-0 bg-[url('/images/background-trello.png')] bg-cover bg-center"></div>
 
           <div className="relative flex flex-col h-full">
@@ -202,6 +153,7 @@ function TrelloPage() {
               {selectedTask && (
                 <Popup
                   task={selectedTask}
+                  members={members}
                   onClose={() => setSelectedTask(null)}
                   onUpdate={(
                     newText,
@@ -237,7 +189,6 @@ function TrelloPage() {
                             attachment: newAttachment,
                             priority: newPriority,
                             checklist: newChecklists,
-                            
                           }
                         : null,
                     );

@@ -71,7 +71,7 @@ export interface DeleteModalProps {
 export interface PopupProps {
   task: Task;
   onClose: () => void;
-  // onUpdate: (newText: string) => void;
+members: Member[];
   onUpdate: (
     newText: string,
     newDescription: string,
@@ -101,17 +101,6 @@ export interface ChecklistPopupProps {
 
 //DropDown Props
 
-// export interface DropDownProps {
-//   priority: string[];
-//   // setPriority: (value: string[]) => void;
-//   setPriority: React.Dispatch<React.SetStateAction<string[]>>;
-//   priorities: Label[];
-//   labels: Label[];
-//   onEditLabel: (newLabel: Label, index: number) => void;
-//   onEditPriority: (newPriority: Label) => void;
-//   onAddPriority: (newPriority: Label) => void;
-//   onAddLabel: (newLabel: Label) => void;
-// }
 
 export interface DropDownProps {
   priority: string[];
@@ -152,12 +141,22 @@ export interface NavbarProps {
   setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }
 
+ export interface ImagePopupProps {
+  src: string;
+  addedAt: string;
+  name: string;
+  onClose: () => void;
+  onDelete: () => void;
+}
 export interface AddMemberPopupProps {
   onClose: () => void;
+   members: Member[];
+  setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }
 
 export interface MemberModalProps {
   cardMembers: Member[];
   setCardMembers: React.Dispatch<React.SetStateAction<Member[]>>;
+  members: Member[];
   onClose: () => void;
 }

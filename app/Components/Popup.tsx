@@ -17,7 +17,7 @@ import MemberModal from "./MemberModal";
 import ProfileModal from "./ProfileModal";
 import Image from "next/image";
 
-const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
+const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   const [text, setText] = useState(task.text);
   const [description, setDescription] = useState(task.description);
   const [attachments, setAttachments] = useState<Attachment[]>(
@@ -386,6 +386,7 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                   onClose={() => setShowMemberModal(false)}
                   cardMembers={cardMembers}
                   setCardMembers={setCardMembers}
+                  members={members}
                 />
               )}
 
@@ -506,8 +507,8 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                     </div>
 
                     {showMenu === idx && (
-                      <div className="absolute right-2 top-8 bg-white shadow-md text-gray-500 rounded-md p-2 z-10">
-                        <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
+                      <div className="absolute right-2 top-10 bg-white shadow-md text-gray-500 rounded-md  z-10">
+                        {/* <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
                           <Image
                             alt="edit"
                             width={16}
@@ -515,15 +516,15 @@ const Popup = ({ task, onClose, onUpdate }: PopupProps) => {
                             src="/images/protectededit.svg"
                             className="w-4 h-4"
                           />
-                          <span className="text-sm text-black">Edit</span>
-                        </button>
+                          <span className="text-sm text-black">Editt</span>
+                        </button> */}
                         <button
                           onClick={() => {
                             setSelectedIndex(idx);
                             setShowDeleteModal(true);
                             setShowMenu(null);
                           }}
-                          className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full text-red-500 cursor-pointer"
+                          className="flex items-center gap-2 px-2 py-1 rounded-md w-full text-red-500 cursor-pointer"
                         >
                           <Image
                             alt="delete"
