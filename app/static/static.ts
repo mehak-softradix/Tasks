@@ -36,7 +36,7 @@ import { act } from "react";
   export const options = [
   { label: "Open card", icon: "/images/opencard.svg" , action: "open" },
   { label: "Edit labels", icon: "/images/label.svg" , action: "Edit labels" },
-  { label: "Change members", icon: "/images/user.svg" },
+  { label: "Change members", icon: "/images/user.svg", action: "Change Members" },
   { label: "Change cover", icon: "/images/image.svg" },
   { label: "Edit dates", icon: "/images/clock.svg" },
   { label: "Move", icon: "/images/right-arrow.png" },

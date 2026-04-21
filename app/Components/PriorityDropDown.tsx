@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DropDownProps, Label } from "../Interafce/types";
+import { PriorityDropDownProps, Label } from "../Interafce/types";
 import LabelDropDown from "./LabelDropDown";
 import Image from "next/image";
 
@@ -10,21 +10,22 @@ const PriorityDropDown = ({
   setPriority,
   priorities,
   setPriorities,
-  labels,
-  setLabels,
+
   
-}: DropDownProps) => {
+}: PriorityDropDownProps) => {
   const [open, setOpen] = useState(false);
 ;
   const [newPriority, setNewPriority] = useState("");
 
   const [showLabelModal, setShowLabelModal] = useState(false);
   
-  const [editingLabel, setEditingLabel] = useState<
-    (Label & { index?: number; type?: "label" | "priority" }) | null
-  >(null);
-
-  // Load priorities from localStorage
+  // const [editingLabel, setEditingLabel] = useState<
+  //   (Label & { index?: number; type?: "label" | "priority" }) | null
+  // >(null);
+const [editingLabel, setEditingLabel] = useState<
+  (Label & { type?: "priority" }) | null
+>(null);
+  //Load priorities from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("priorities");
     if (saved) {
@@ -47,12 +48,12 @@ const PriorityDropDown = ({
   }, []);
 
   // Load labels
-  useEffect(() => {
-    const savedLabels = localStorage.getItem("labels");
-    if (savedLabels) {
-      setLabels(JSON.parse(savedLabels));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedLabels = localStorage.getItem("labels");
+  //   if (savedLabels) {
+  //     setLabels(JSON.parse(savedLabels));
+  //   }
+  // }, []);
 
   // Save priorities
   useEffect(() => {
@@ -62,9 +63,9 @@ const PriorityDropDown = ({
   }, [priorities]);
 
   // Save labels
-  useEffect(() => {
-    localStorage.setItem("labels", JSON.stringify(labels));
-  }, [labels]);
+  // useEffect(() => {
+  //   localStorage.setItem("labels", JSON.stringify(labels));
+  // }, [labels]);
 
   // Add new priority
   const handleAddPriority = () => {
@@ -78,24 +79,38 @@ const PriorityDropDown = ({
     setNewPriority("");
   };
 
+  // const handleDelete = () => {
+  //   if (!editingLabel) return;
+
+  //   // if (editingLabel.type === "label" && editingLabel.index !== undefined) {
+  //   //   setLabels((prev) => prev.filter((_, i) => i !== editingLabel.index));
+  //   // } 
+  //   else if (editingLabel.type === "priority") {
+  //     setPriorities((prev) =>
+  //       prev.filter((p) => p.title !== editingLabel.title),
+  //     );
+
+  //     setPriority((prev) => prev.filter((p) => p !== editingLabel.title));
+  //   }
+
+  //   setShowLabelModal(false);
+  //   setEditingLabel(null);
+  // };
+
   const handleDelete = () => {
-    if (!editingLabel) return;
+  if (!editingLabel) return;
 
-    if (editingLabel.type === "label" && editingLabel.index !== undefined) {
-      setLabels((prev) => prev.filter((_, i) => i !== editingLabel.index));
-    } else if (editingLabel.type === "priority") {
-      setPriorities((prev) =>
-        prev.filter((p) => p.title !== editingLabel.title),
-      );
+  setPriorities((prev) =>
+    prev.filter((p) => p.title !== editingLabel.title)
+  );
 
-      setPriority((prev) => prev.filter((p) => p !== editingLabel.title));
-    }
+  setPriority((prev) =>
+    prev.filter((p) => p !== editingLabel.title)
+  );
 
-    setShowLabelModal(false);
-    setEditingLabel(null);
-  };
-
-  ;
+  setShowLabelModal(false);
+  setEditingLabel(null);
+};
 
   return (
     <div>
@@ -153,7 +168,7 @@ const PriorityDropDown = ({
             </div>
 
             {/* Labels */}
-            {labels.length > 0 && (
+            {/* {labels.length > 0 && (
               <div className="mt-3">
                 {labels.map((label, index) => (
                   <div
@@ -183,7 +198,7 @@ const PriorityDropDown = ({
                   </div>
                 ))}
               </div>
-            )}
+            )} */}
 
             {/* Priorities */}
             {priorities.map((item, index) => (
@@ -194,7 +209,7 @@ const PriorityDropDown = ({
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    setPriority([item.title]);
+                    // setPriority([item.title]);
                     setOpen(false);
                   }}
                   className="flex items-center gap-2 px-4 py-2 text-sm cursor-pointer rounded-md text-white"
@@ -240,35 +255,51 @@ const PriorityDropDown = ({
           <LabelDropDown
             onClose={() => setShowLabelModal(false)}
             onDelete={handleDelete}
+            // onSave={(newLabel) => {
+            //   if (
+            //     editingLabel?.type === "label" &&
+            //     editingLabel.index !== undefined
+            //   ) {
+            //     setLabels((prev) =>
+            //       prev.map((label, i) =>
+            //         i === editingLabel.index ? newLabel : label,
+            //       ),
+            //     );
+            //   } else if (editingLabel?.type === "priority") {
+            //     setPriorities((prev) =>
+            //       prev.map((p) =>
+            //         p.title === editingLabel.title ? newLabel : p,
+            //       ),
+            //     );
+
+            //     setPriority((prev) =>
+            //       prev.map((p) =>
+            //         p === editingLabel.title ? newLabel.title : p,
+            //       ),
+            //     );
+            //   } else {
+            //     setLabels((prev) => [...prev, newLabel]);
+            //   }
+
+            //   setShowLabelModal(false);
+            //   setEditingLabel(null);
+            // }}
             onSave={(newLabel) => {
-              if (
-                editingLabel?.type === "label" &&
-                editingLabel.index !== undefined
-              ) {
-                setLabels((prev) =>
-                  prev.map((label, i) =>
-                    i === editingLabel.index ? newLabel : label,
-                  ),
-                );
-              } else if (editingLabel?.type === "priority") {
-                setPriorities((prev) =>
-                  prev.map((p) =>
-                    p.title === editingLabel.title ? newLabel : p,
-                  ),
-                );
+  setPriorities((prev) =>
+    prev.map((p) =>
+      p.title === editingLabel?.title ? newLabel : p
+    )
+  );
 
-                setPriority((prev) =>
-                  prev.map((p) =>
-                    p === editingLabel.title ? newLabel.title : p,
-                  ),
-                );
-              } else {
-                setLabels((prev) => [...prev, newLabel]);
-              }
+  setPriority((prev) =>
+    prev.map((p) =>
+      p === editingLabel?.title ? newLabel.title : p
+    )
+  );
 
-              setShowLabelModal(false);
-              setEditingLabel(null);
-            }}
+  setShowLabelModal(false);
+  setEditingLabel(null);
+}}
             initialData={editingLabel}
           />
         )}

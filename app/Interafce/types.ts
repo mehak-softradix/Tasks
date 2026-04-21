@@ -8,6 +8,7 @@ export interface Task {
   completed: boolean;
   priority?: string[];
   checklist?: Checklist[];
+  members?: Member[];
 }
 
 export interface BoardData {
@@ -30,6 +31,7 @@ export interface CardProps {
   id: string;
   title: string;
   tasks: Task[];
+  members: Member[];
   setBoard: React.Dispatch<React.SetStateAction<BoardData>>;
   dragItem: { fromCol: string; index: number } | null;
   setDragItem: React.Dispatch<
@@ -58,7 +60,6 @@ export interface CardProps {
   >;
 }
 
-
 export interface DeleteModalProps {
   title?: string;
   description?: string;
@@ -71,7 +72,7 @@ export interface DeleteModalProps {
 export interface PopupProps {
   task: Task;
   onClose: () => void;
-members: Member[];
+  members: Member[];
   onUpdate: (
     newText: string,
     newDescription: string,
@@ -101,8 +102,7 @@ export interface ChecklistPopupProps {
 
 //DropDown Props
 
-
-export interface DropDownProps {
+export interface PriorityDropDownProps {
   priority: string[];
 
   setPriority: React.Dispatch<React.SetStateAction<string[]>>;
@@ -141,7 +141,7 @@ export interface NavbarProps {
   setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }
 
- export interface ImagePopupProps {
+export interface ImagePopupProps {
   src: string;
   addedAt: string;
   name: string;
@@ -150,7 +150,7 @@ export interface NavbarProps {
 }
 export interface AddMemberPopupProps {
   onClose: () => void;
-   members: Member[];
+  members: Member[];
   setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }
 

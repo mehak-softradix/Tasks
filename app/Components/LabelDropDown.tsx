@@ -31,7 +31,7 @@ const LabelDropDown = ({
     <div className="absolute top-10  z-20">
       <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
         <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
-          Edit label
+          {initialData ? "Edit label" : "Create label"}
         </h1>
 
         <button
@@ -42,12 +42,14 @@ const LabelDropDown = ({
         </button>
 
         {/* Preview */}
+
         <div
           className="w-full text-sm px-3 py-2 rounded mb-4 text-center "
           style={{ backgroundColor: selectedColor || "#232323" }}
         >
-          {title}
+          {title} 
         </div>
+  
 
         {/* Title Input */}
         <label className="text-sm font-semibold text-gray-400">Title</label>

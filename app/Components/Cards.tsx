@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CardProps } from "../Interafce/types";
+import { CardProps, Label, Member } from "../Interafce/types";
 import DeleteModal from "./DeleteModal";
 import Image from "next/image";
 import Popup from "./Popup";
 import EditModal from "./EditModal";
 import { useRouter } from "next/navigation";
-import PriorityDropDown from "./PriorityDropDown";
 
-
+import MemberModal from "./MemberModal";
+import Labels from "./Labels";
 
 const Cards: React.FC<CardProps> = ({
   id,
@@ -21,6 +21,7 @@ const Cards: React.FC<CardProps> = ({
   moveTask,
   setColumnOrder,
   setSelectedTask,
+  members,
 }) => {
   const [addTask, setAddTask] = useState("");
   const [showMenu, setShowMenu] = useState(false);
@@ -40,18 +41,28 @@ const Cards: React.FC<CardProps> = ({
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
   const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
+  const [openMemberModal, setOpenMemberModal] = useState(false);
 
   const [activeCard, setActiveCard] = useState<{
     id: string;
+    index: number;
     top: number;
     left: number;
   } | null>(null);
 
+  const [priority, setPriority] = useState<string[]>([]);
+  // const [priorities, setPriorities] = useState<Label[]>([
+  //   { title: "High Priority", color: "#ef4444" },
+  //   { title: "Medium Priority", color: "#eab308" },
+  //   { title: "Low Priority", color: "#22c55e" },
+  // ]);
+  const [priorities, setPriorities] = useState<Label[]>([]);
+  // const [labels, setLabels] = useState<Label[]>([]);
+  const [cardMembers, setCardMembers] = useState<Member[]>([]);
+
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
-
-console.log("priorityDropdownOpen:", priorityDropdownOpen);
 
   const handleAddTask = () => {
     if (addTask.trim() === "") return;
@@ -67,6 +78,7 @@ console.log("priorityDropdownOpen:", priorityDropdownOpen);
           description: "",
           checklist: [],
           priority: [],
+          members: [],
         },
       ],
     }));
@@ -141,27 +153,67 @@ console.log("priorityDropdownOpen:", priorityDropdownOpen);
     setShowDeleteModal(false);
   };
 
-  const handleOpenCard = (task , index) => {
-  setSelectedTask({
-    id: task.id,
-    text: task.text,
-    description: task.description,
-    attachment: task.attachment || [],
-    priority: task.priority || [],
-    checklist: task.checklist || [],
-    index,
-    completed: task.completed,
-    colId: id,
-  });
+  const handleOpenCard = (task, index) => {
+    setSelectedTask({
+      id: task.id,
+      text: task.text,
+      description: task.description,
+      attachment: task.attachment || [],
+      priority: task.priority || [],
+      checklist: task.checklist || [],
+      index,
+      completed: task.completed,
+      colId: id,
+    });
 
-  router.replace(`?taskId=${task.id}`);
-};
+    router.replace(`?taskId=${task.id}`);
+  };
+  const handlePriorityChange = (newPriority: string[]) => {
+    if (!activeCard) return;
 
+    setBoard((prev) => ({
+      ...prev,
+      [id]: prev[id].map((task) =>
+        task.id === activeCard.id ? { ...task, priority: newPriority } : task,
+      ),
+    }));
+
+    setPriority(newPriority);
+  };
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
       titleInputRef.current.focus();
     }
   }, [isEditingTitle]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("priorities");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Handle old string data
+      if (typeof parsed[0] === "string") {
+        setPriorities(
+          parsed.map((p: string) => ({ title: p, color: "#3b82f6" })),
+        );
+      } else {
+        setPriorities(parsed);
+      }
+    } else {
+      setPriorities([
+        { title: "High Priority", color: "#f87171" },
+        { title: "Medium Priority", color: "#facc15" },
+        { title: "Low Priority", color: "#4ade80" },
+      ]);
+    }
+  }, []);
+  useEffect(() => {
+    if (priorities.length > 0) {
+      localStorage.setItem("priorities", JSON.stringify(priorities));
+    }
+  }, [priorities]);
+
+  console.log(openMemberModal, "openMembdee");
+  console.log(priorities, "priorities");
 
   return (
     <>
@@ -368,8 +420,7 @@ console.log("priorityDropdownOpen:", priorityDropdownOpen);
                       setSelectedTask(selected);
                       // router.replace(`taskId?${task.id}`);
                       router.replace(`?taskId=${task.id}`);
-                    }
-                    }
+                    }}
                   >
                     {task.attachment && task.attachment.length > 0 && (
                       <div className="w-full h-25 relative ">
@@ -400,6 +451,7 @@ console.log("priorityDropdownOpen:", priorityDropdownOpen);
 
                               setActiveCard({
                                 id: task.id,
+                                index,
                                 top: rect.top,
                                 left,
                               });
@@ -520,41 +572,72 @@ console.log("priorityDropdownOpen:", priorityDropdownOpen);
             />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-50  ">
+            <div className=" inset-0 z-50  relative  ">
               <div onClick={(e) => e.stopPropagation()}>
                 <EditModal
                   taskId={activeCard.id}
                   onClose={() => {
                     setActiveCard(null);
                     setActiveCardId(null);
+                   
                   }}
-                    onOpenCard={() => {
-    const task = tasks.find(t => t.id === activeCard.id);
-    if (task) handleOpenCard(task);
-  }}
-   onEditLabels={() => {
-    setPriorityDropdownOpen(true); 
-  }}
+                  onOpenCard={() => {
+                    const task = tasks.find((t) => t.id === activeCard.id);
+                    if (task) handleOpenCard(task, id);
+                  }}
+                  onEditLabels={() => {
+                    const task = tasks.find((t) => t.id === activeCard?.id);
+
+                    if (task) {
+                      setPriority(task.priority || []);
+                    }
+
+                    setPriorityDropdownOpen(true);
+                  }}
+                  onChangeMembers={() => {
+                    const task = tasks.find((t) => t.id === activeCard?.id);
+
+                    if (task) {
+                      setCardMembers(task.members || []);
+                    }
+
+                    setOpenMemberModal(true);
+                  }}
                   position={{
                     top: activeCard.top,
                     left: activeCard.left,
                   }}
                 />
+
+                {priorityDropdownOpen && (
+                  <Labels
+                    onClose={() => setPriorityDropdownOpen(false)}
+                    selected={priority}
+                    setSelected={(value) => {
+                      const newValue =
+                        typeof value === "function" ? value(priority) : value;
+
+                      handlePriorityChange(newValue);
+                    }}
+                    labels={priorities}
+                    setLabels={setPriorities}
+                  />
+                )}
+
+                {openMemberModal && activeCard && (
+                  <div className="fixed inset-0 z-80 left-90 top-[-190] flex items-center justify-center">
+                    <MemberModal
+                      members={members}
+                      cardMembers={cardMembers}
+                      setCardMembers={setCardMembers}
+                      onClose={() => setOpenMemberModal(false)}
+                    />
+                  </div>
+                )}
               </div>
             </div>
-            {priorityDropdownOpen && (
-  <PriorityDropDown
-    priority={[]}
-    setPriority={() => {}}
-    priorities={[]}
-    setPriorities={() => {}}
-    labels={[]}
-    setLabels={() => {}}
-  />
-)}
           </>
         )}
-
 
         {/* Add Card Button */}
 

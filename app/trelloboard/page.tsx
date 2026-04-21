@@ -42,7 +42,7 @@ function TrelloPage() {
     colId: string;
   } | null>(null);
 
-  console.log("Selected Task:", selectedTask);
+  // console.log("Selected Task:", selectedTask);
 
   const [dragColumn, setDragColumn] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -245,6 +245,7 @@ useEffect(() => {
                       moveTask={moveTask}
                       setColumnOrder={setColumnOrder}
                       setSelectedTask={setSelectedTask}
+                      members={members}
                     />
                   </div>
                 ))}
