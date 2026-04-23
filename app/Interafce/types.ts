@@ -9,6 +9,7 @@ export interface Task {
   priority?: string[];
   checklist?: Checklist[];
   members?: Member[];
+  coverColor?: string|null;
 }
 
 export interface BoardData {

@@ -83,6 +83,8 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   const [hoveredMember, setHoveredMember] = useState<Member | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
 
+
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checklistInputRef = useRef<HTMLInputElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -138,6 +140,15 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
       checklistInputRef.current.focus();
     }
   }, [showInput]);
+
+   useEffect(() => {
+    setText(task.text);
+    setDescription(task.description);
+    setAttachments(task.attachment || []);
+    setPriority(task.priority || []);
+    setChecklists(task.checklist || []);
+  }, [task]);
+
 
   // Read files and return src, name, date
   const readFilesAsDataUrls = (files: FileList) => {

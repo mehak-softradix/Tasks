@@ -8,6 +8,8 @@
     onOpenCard,
     onEditLabels,
     onChangeMembers,
+    onChangeCover,
+    onEditDates,
   }: {
     onClose: () => void;
     taskId: string;
@@ -15,6 +17,8 @@
     onOpenCard: () => void;
     onEditLabels: () => void;
     onChangeMembers: () => void;
+    onChangeCover: () => void;
+    onEditDates: () => void;
   }) => {
     const handleOptionClick = (item: any  ) => {
         // e.stopPropagation(); 
@@ -26,7 +30,15 @@
       } else if (item.action === "Change Members") {
         onChangeMembers();
     
-      } else {
+      } 
+
+      else if (item.action === "Change Cover") {
+        onChangeCover();
+      }
+      else if (item.action === "Edit Dates") {
+        onEditDates();  
+      }
+      else {
         onClose();
       }
     };

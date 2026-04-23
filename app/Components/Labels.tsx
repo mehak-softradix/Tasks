@@ -169,7 +169,7 @@ const Labels = ({
           </button>
           <hr className="border-gray-600 my-2" />
           <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm">
-            Enable colorblind friendly mode{" "}
+            Enable colorblind friendly mode
           </button>
         </div>
       </div>

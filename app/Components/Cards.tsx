@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 import MemberModal from "./MemberModal";
 import Labels from "./Labels";
+import ChangeCoverPoup from "./ChangeCoverPoup";
 
 const Cards: React.FC<CardProps> = ({
   id,
@@ -59,6 +60,8 @@ const Cards: React.FC<CardProps> = ({
   const [priorities, setPriorities] = useState<Label[]>([]);
   // const [labels, setLabels] = useState<Label[]>([]);
   const [cardMembers, setCardMembers] = useState<Member[]>([]);
+  const [showChangeCoverPopup, setShowChangeCoverPopup] = useState(false);
+  const selectedTask = tasks.find((t) => t.id === activeCard?.id);
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -79,6 +82,7 @@ const Cards: React.FC<CardProps> = ({
           checklist: [],
           priority: [],
           members: [],
+          coverColor: null,
         },
       ],
     }));
@@ -180,6 +184,54 @@ const Cards: React.FC<CardProps> = ({
 
     setPriority(newPriority);
   };
+
+  //   const handleSetAttachments = (newAttachments) => {
+  //   if (!activeCard) return;
+
+  //   setBoard((prev) => ({
+  //     ...prev,
+  //     [id]: prev[id].map((task) =>
+  //       task.id === activeCard.id
+  //         ? { ...task, attachment: newAttachments }
+  //         : task
+  //     ),
+  //   }));
+  // };
+
+  const handleSetAttachments = (
+    newAttachmentsOrUpdater:
+      | Attachment[]
+      | ((prev: Attachment[]) => Attachment[]),
+  ) => {
+    if (!activeCard) return;
+
+    setBoard((prev) => ({
+      ...prev,
+      [id]: prev[id].map((task) => {
+        if (task.id !== activeCard.id) return task;
+
+        const currentAttachments = task.attachment || [];
+        const newAttachments =
+          typeof newAttachmentsOrUpdater === "function"
+            ? newAttachmentsOrUpdater(currentAttachments)
+            : newAttachmentsOrUpdater;
+
+        return { ...task, attachment: newAttachments };
+      }),
+    }));
+  };
+
+  const handleSetCoverColor = (color: string | null) => {
+    if (!activeCard) return;
+
+    setBoard((prev) => ({
+      ...prev,
+      [id]: prev[id].map((task) =>
+        task.id === activeCard.id ? { ...task, coverColor: color } : task,
+      ),
+    }));
+  };
+
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -212,9 +264,16 @@ const Cards: React.FC<CardProps> = ({
     }
   }, [priorities]);
 
-  console.log(openMemberModal, "openMembdee");
-  console.log(priorities, "priorities");
+  useEffect(() => {
+    if (activeCard) {
+      localStorage.setItem(
+        `members-${activeCard.id}`,
+        JSON.stringify(cardMembers),
+      );
+    }
+  }, [cardMembers, activeCard]);
 
+  console.log("showChangeCover", showChangeCoverPopup);
   return (
     <>
       <div
@@ -422,61 +481,72 @@ const Cards: React.FC<CardProps> = ({
                       router.replace(`?taskId=${task.id}`);
                     }}
                   >
-                    {task.attachment && task.attachment.length > 0 && (
-                      <div className="w-full h-25 relative ">
-                        <Image
-                          src={task.attachment[0].src}
-                          alt="cover"
-                          fill
-                          className=" object-cover rounded-t-lg"
-                        />
-                        <div className="absolute  p-1 top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center  rounded-full  bg-white/80 backdrop-blur   shadow">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              const rect = (
-                                e.currentTarget as HTMLElement
-                              ).getBoundingClientRect();
-
-                              const modalWidth = 180;
-                              const gap = 10;
-
-                              let left = rect.right + gap;
-
-                              // prevent right overflow
-                              if (left + modalWidth > window.innerWidth) {
-                                left = rect.left - modalWidth - gap;
-                              }
-
-                              setActiveCard({
-                                id: task.id,
-                                index,
-                                top: rect.top,
-                                left,
-                              });
-                              setActiveCardId(task.id);
-                            }}
-                          >
-                            <Image
-                              src="/images/edit.svg"
-                              alt="edit"
-                              width={20}
-                              height={20}
-                              className="ml-[1px]"
+                    {task.attachment &&
+                      task.attachment.length > 0 &&
+                      task.attachment[0]?.src && (
+                        <div className="w-full h-25 relative ">
+                          <Image
+                            src={task.attachment[0].src}
+                            alt="cover"
+                            fill
+                            className=" object-cover rounded-t-lg"
+                          />
+                          {task.coverColor && (
+                            <div
+                              className="absolute inset-0 rounded-t-lg"
+                              style={{
+                                backgroundColor: task.coverColor,
+                                opacity: 0.5,
+                              }}
                             />
-                          </button>
+                          )}
+                          <div className="absolute  p-1 top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center  rounded-full  bg-white/80 backdrop-blur   shadow">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
 
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
+                                const rect = (
+                                  e.currentTarget as HTMLElement
+                                ).getBoundingClientRect();
 
-                              handleDeleteTask(index);
-                            }}
-                          ></button>
+                                const modalWidth = 180;
+                                const gap = 10;
+
+                                let left = rect.right + gap;
+
+                                // prevent right overflow
+                                if (left + modalWidth > window.innerWidth) {
+                                  left = rect.left - modalWidth - gap;
+                                }
+
+                                setActiveCard({
+                                  id: task.id,
+                                  index,
+                                  top: rect.top,
+                                  left,
+                                });
+                                setActiveCardId(task.id);
+                              }}
+                            >
+                              <Image
+                                src="/images/edit.svg"
+                                alt="edit"
+                                width={20}
+                                height={20}
+                                className="ml-[1px]"
+                              />
+                            </button>
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                handleDeleteTask(index);
+                              }}
+                            ></button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {task.priority && task.priority.length > 0 && (
                       <div className=" flex gap-1 flex-wrap px-3">
@@ -579,7 +649,6 @@ const Cards: React.FC<CardProps> = ({
                   onClose={() => {
                     setActiveCard(null);
                     setActiveCardId(null);
-                   
                   }}
                   onOpenCard={() => {
                     const task = tasks.find((t) => t.id === activeCard.id);
@@ -595,14 +664,20 @@ const Cards: React.FC<CardProps> = ({
                     setPriorityDropdownOpen(true);
                   }}
                   onChangeMembers={() => {
-                    const task = tasks.find((t) => t.id === activeCard?.id);
+                    if (!activeCard) return;
 
-                    if (task) {
-                      setCardMembers(task.members || []);
-                    }
+                    const saved = localStorage.getItem(
+                      `members-${activeCard.id}`,
+                    );
+
+                    setCardMembers(saved ? JSON.parse(saved) : []);
 
                     setOpenMemberModal(true);
                   }}
+                  onChangeCover={() => {
+                    setShowChangeCoverPopup(true);
+                  }}
+                  onEditDates={() => {}}
                   position={{
                     top: activeCard.top,
                     left: activeCard.left,
@@ -633,6 +708,17 @@ const Cards: React.FC<CardProps> = ({
                       onClose={() => setOpenMemberModal(false)}
                     />
                   </div>
+                )}
+                {showChangeCoverPopup && activeCard && (
+                  <ChangeCoverPoup
+                    onClose={() => setShowChangeCoverPopup(false)}
+                    attachments={selectedTask?.attachment || []}
+                    setAttachments={handleSetAttachments}
+                    onRemoveCover={() => {
+                      handleSetAttachments([]);
+                    }}
+                    onCoverColor={handleSetCoverColor}
+                  />
                 )}
               </div>
             </div>
