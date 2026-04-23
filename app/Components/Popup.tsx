@@ -227,7 +227,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   };
   // Save changes helper
   const handleSave = () => {
-    onUpdate(text, description, attachments, priority, checklists);
+    onUpdate(text, description, attachments, priority, checklists , cardMembers);
   };
   // useEffect(() => {
   //   setOriginalChecklists(task.checklist || []);

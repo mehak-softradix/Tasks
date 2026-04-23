@@ -10,6 +10,7 @@ export interface Task {
   checklist?: Checklist[];
   members?: Member[];
   coverColor?: string|null;
+  coverImage?: string|null;
 }
 
 export interface BoardData {
@@ -54,6 +55,7 @@ export interface CardProps {
       attachment?: Attachment[];
       priority?: string[];
       checklist?: Checklist[];
+      members?: Member[];
       completed: boolean;
       index: number;
       colId: string;
@@ -78,8 +80,12 @@ export interface PopupProps {
     newText: string,
     newDescription: string,
     newAttachment: Attachment[],
+
     priority?: string[],
     checklist?: Checklist[],
+    newMembers?: Member[],
+
+
   ) => void;
 }
 

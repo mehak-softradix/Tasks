@@ -14,16 +14,23 @@ const ChangeCoverPoup = ({
   setAttachments,
   onRemoveCover,
   onCoverColor,
+  coverColor,
+  onCoverImage,
+
 }: {
   onClose: () => void;
   attachments: Attachment[];
   setAttachments: React.Dispatch<React.SetStateAction<Attachment[]>>;
   onRemoveCover: () => void;
-    onCoverColor: (color: string | null) => void;
+  onCoverColor: (color: string | null) => void;
+  onCoverImage: (image: string | null) => void;
+
+  coverColor: string | null;
 }) => {
   const limitedColors = colors.slice(3, 13);
 
-  const [coverColor, setCoverColor] = useState<string | null>(null);
+  // const [coverColor, setCoverColor] = useState<string | null>(null);
+  const [selectedCover, setSelectedCover] = useState<string | null>(null);
 
   // upload handler
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,19 +46,28 @@ const ChangeCoverPoup = ({
         date: new Date().toISOString(),
       };
 
-      setAttachments((prev) => [...prev, newAttachment]);
+      // setAttachments((prev) => [...prev, newAttachment]);
+
+  setAttachments((prev) => {
+    const updated = [...prev, newAttachment];
+
+    // 👇 automatically set cover
+    onCoverImage(newAttachment.src);
+    onCoverColor(null);
+
+    return updated;
+  });
     };
 
     reader.readAsDataURL(file);
   };
 
- 
   useEffect(() => {
     return () => {};
   }, []);
 
   return (
-    <div className="absolute top-[-50px] left-10 z-50">
+    <div className="absolute top-0 left-60 z-50">
       <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
         <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
           Cover
@@ -73,22 +89,25 @@ const ChangeCoverPoup = ({
                 key={i}
                 className="w-30 h-16 relative rounded overflow-hidden border border-gray-600 cursor-pointer"
                 style={{
-                  backgroundColor: coverColor
-                    ? coverColor
-                    : limitedColors[i % limitedColors.length],
+                  backgroundColor: coverColor ? coverColor : "transparent",
                 }}
                 onClick={() => {
-                  setAttachments((prev) => {
-                    const updated = [...prev];
-                    const selected = updated.splice(i, 1)[0];
-                    updated.unshift(selected);
-                    return updated;
-                  });
-                  setCoverColor(null);
+                  //   setAttachments((prev) => {
+                  //     const updated = [...prev];
+                  //     const selected = updated.splice(i, 1)[0];
+                  //     updated.unshift(selected);
+                  //     return updated;
+                  //   });
+                  //   setCoverColor(null);
+                  // }}
+                  setSelectedCover(img.src);
+                  onCoverImage(img.src);
+                  onCoverColor(null);
+                  // setCoverColor(null);
                 }}
               >
                 {/* show image ONLY if no color is selected */}
-                {!coverColor && (
+                { selectedCover === img.src && !coverColor && (
                   <Image
                     src={img.src}
                     alt="cover"
@@ -107,8 +126,9 @@ const ChangeCoverPoup = ({
         <button
           className="w-full text-sm text-gray-400 bg-[#1f1f1f] py-2 rounded mb-3"
           onClick={() => {
-            setCoverColor(null);
+            // setCoverColor(null);
             onRemoveCover();
+            onCoverImage(null);
           }}
         >
           Remove cover
@@ -116,8 +136,9 @@ const ChangeCoverPoup = ({
 
         {/* COLORS */}
         <p className="text-xs font-semibold mb-2">Colors</p>
-        <div className="grid grid-cols-5 gap-2 mb-3">
+        {/* <div className="grid grid-cols-5 gap-2 mb-3">
           {limitedColors.map((color, i) => (
+           
             <div
               key={i}
               className="w-10 h-8 rounded cursor-pointer border border-gray-500"
@@ -128,10 +149,49 @@ const ChangeCoverPoup = ({
               onClick={() => {setCoverColor(color);
                 onCoverColor(color);
               }}
+    {isSelected && (
+       <img src="/images/check.svg" className="w-5 h-5"/>
+        )}
             />
           ))}
-        </div>
+        </div> */}
+        <div className="grid grid-cols-5 gap-2 mb-3">
+          {limitedColors.map((color, i) => {
+            const isSelected = coverColor === color;
 
+            return (
+              <div
+                key={i}
+                className="w-10 h-8 rounded cursor-pointer border border-gray-500 flex items-center justify-center"
+                style={{
+                  backgroundColor: color,
+                  outline: isSelected ? "2px solid white" : "none",
+                }}
+                onClick={() => {
+                  if (coverColor === color) {
+                    // setCoverColor(null);
+                    onCoverColor(null);
+                    setSelectedCover(null)
+                  } else {
+                    // setCoverColor(color);
+                    onCoverColor(color);
+                    onCoverImage(null);
+                    setSelectedCover(null);
+                  }
+                }}
+              >
+                {isSelected && (
+                  <Image
+                    src="/images/check.svg"
+                    alt="check"
+                    width={20}
+                    height={20}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
         <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm">
           Enable colorblind friendly mode
         </button>

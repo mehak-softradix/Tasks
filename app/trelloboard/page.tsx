@@ -187,6 +187,7 @@ useEffect(() => {
                     newAttachment,
                     newPriority,
                     newChecklists,
+                    newMembers,
                   ) => {
                     setBoard((prev) => ({
                       ...prev,
@@ -200,6 +201,7 @@ useEffect(() => {
                                 attachment: newAttachment,
                                 priority: newPriority,
                                 checklist: newChecklists,
+                                members: newMembers,
                               }
                             : task,
                       ),
@@ -215,6 +217,7 @@ useEffect(() => {
                             attachment: newAttachment,
                             priority: newPriority,
                             checklist: newChecklists,
+                            members: newMembers,
                           }
                         : null,
                     );

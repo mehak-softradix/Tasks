@@ -83,6 +83,7 @@ const Cards: React.FC<CardProps> = ({
           priority: [],
           members: [],
           coverColor: null,
+          coverImage: null,
         },
       ],
     }));
@@ -165,6 +166,7 @@ const Cards: React.FC<CardProps> = ({
       attachment: task.attachment || [],
       priority: task.priority || [],
       checklist: task.checklist || [],
+      members: task.members || [],
       index,
       completed: task.completed,
       colId: id,
@@ -232,6 +234,16 @@ const Cards: React.FC<CardProps> = ({
     }));
   };
 
+  const handleSetCoverImage = (image: string | null) => {
+    if (!activeCard) return;
+
+    setBoard((prev) => ({
+      ...prev,
+      [id]: prev[id].map((task) =>
+        task.id === activeCard.id ? { ...task, coverImage: image } : task,
+      ),
+    }));
+  };
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -273,7 +285,6 @@ const Cards: React.FC<CardProps> = ({
     }
   }, [cardMembers, activeCard]);
 
-  console.log("showChangeCover", showChangeCoverPopup);
   return (
     <>
       <div
@@ -481,72 +492,91 @@ const Cards: React.FC<CardProps> = ({
                       router.replace(`?taskId=${task.id}`);
                     }}
                   >
-                    {task.attachment &&
+                    {/* {task.attachment &&
                       task.attachment.length > 0 &&
-                      task.attachment[0]?.src && (
-                        <div className="w-full h-25 relative ">
-                          <Image
+                      task.attachment[0]?.src && ( */}
+                    {(task.coverColor ||
+                      (task.attachment?.length ?? 0) > 0) && (
+                      <div className="w-full h-25 relative ">
+                        {/* <Image
                             src={task.attachment[0].src}
                             alt="cover"
                             fill
                             className=" object-cover rounded-t-lg"
+                          /> */}
+                        {/* {!task.coverColor && (task.attachment?.length ?? 0) > 0 && (
+      <Image
+        src={task.attachment![0].src}
+        alt="cover"
+        fill
+        className="object-cover rounded-t-lg"
+      />
+    )} */}
+                        {!task.coverColor && task.coverImage && (
+                          <Image
+                            src={task.coverImage}
+                            alt="cover"
+                            fill
+                            className="object-cover rounded-t-lg"
                           />
-                          {task.coverColor && (
-                            <div
-                              className="absolute inset-0 rounded-t-lg"
-                              style={{
-                                backgroundColor: task.coverColor,
-                                opacity: 0.5,
-                              }}
+                        )}
+                        {task.coverColor && (
+                          <div
+                            className="absolute inset-0 rounded-t-lg"
+                            style={{
+                              backgroundColor: task.coverColor,
+                              opacity: 1,
+                            }}
+                          />
+                        )}
+
+                        <div className="absolute  p-1 top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center  rounded-full  bg-white/80 backdrop-blur   shadow">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              const rect = (
+                                e.currentTarget as HTMLElement
+                              ).getBoundingClientRect();
+
+                              const modalWidth = 180;
+                              const gap = 10;
+
+                              let left = rect.right + gap;
+
+                              // prevent right overflow
+                              if (left + modalWidth > window.innerWidth) {
+                                left = rect.left - modalWidth - gap;
+                              }
+
+                              setActiveCard({
+                                id: task.id,
+                                index,
+                                top: rect.top,
+                                left,
+                              });
+                              setActiveCardId(task.id);
+                            }}
+                          >
+                            <Image
+                              src="/images/edit.svg"
+                              alt="edit"
+                              width={20}
+                              height={20}
+                              className="ml-[1px]"
                             />
-                          )}
-                          <div className="absolute  p-1 top-2 right-2  opacity-0 group-hover:opacity-100 transition-opacity flex justify-center  rounded-full  bg-white/80 backdrop-blur   shadow">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
+                          </button>
 
-                                const rect = (
-                                  e.currentTarget as HTMLElement
-                                ).getBoundingClientRect();
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
 
-                                const modalWidth = 180;
-                                const gap = 10;
-
-                                let left = rect.right + gap;
-
-                                // prevent right overflow
-                                if (left + modalWidth > window.innerWidth) {
-                                  left = rect.left - modalWidth - gap;
-                                }
-
-                                setActiveCard({
-                                  id: task.id,
-                                  index,
-                                  top: rect.top,
-                                  left,
-                                });
-                                setActiveCardId(task.id);
-                              }}
-                            >
-                              <Image
-                                src="/images/edit.svg"
-                                alt="edit"
-                                width={20}
-                                height={20}
-                                className="ml-[1px]"
-                              />
-                            </button>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-
-                                handleDeleteTask(index);
-                              }}
-                            ></button>
-                          </div>
+                              handleDeleteTask(index);
+                            }}
+                          ></button>
                         </div>
-                      )}
+                      </div>
+                    )}
 
                     {task.priority && task.priority.length > 0 && (
                       <div className=" flex gap-1 flex-wrap px-3">
@@ -583,7 +613,7 @@ const Cards: React.FC<CardProps> = ({
                       />
                     </div>
 
-                    <div className=" flex gap-2 items-center ml-2">
+                    <div className=" flex gap-5  items-center ml-2">
                       <div className="  relative w-3.5 h-3.5 ml-2">
                         <Image src="/images/attach.svg" alt="attach" fill />
                         {task.attachment && task.attachment.length > 0 && (
@@ -592,8 +622,31 @@ const Cards: React.FC<CardProps> = ({
                           </span>
                         )}
                       </div>
+                      <div className="">
+                        {task.members && task.members.length > 0 && (
+                          <div className="flex  gap-5 px-3 mt-2 ml-20">
+                            {task.members.map((m) => (
+                              <div
+                                key={m.id}
+                                className="w-6 h-6 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold"
+                              >
+                                {m.name
+                                  .split(" ")
+                                  .map((w) => w[0])
+                                  .slice(0, 2)
+                                  .join("")
+                                  .toUpperCase()}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
+
+                  {/* <div className="">
+                  {task.members}
+                    </div> */}
 
                   {activeIndex === index && (
                     <div className="flex gap-2 mt-2 bg-gray-100 p-2 rounded-md shadow">
@@ -716,8 +769,11 @@ const Cards: React.FC<CardProps> = ({
                     setAttachments={handleSetAttachments}
                     onRemoveCover={() => {
                       handleSetAttachments([]);
+                      handleSetCoverColor(null);
                     }}
                     onCoverColor={handleSetCoverColor}
+                    coverColor={selectedTask?.coverColor || null}
+                    onCoverImage={handleSetCoverImage}
                   />
                 )}
               </div>
