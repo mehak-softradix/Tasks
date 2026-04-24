@@ -16,7 +16,7 @@ const ChangeCoverPoup = ({
   onCoverColor,
   coverColor,
   onCoverImage,
-
+  coverImage,
 }: {
   onClose: () => void;
   attachments: Attachment[];
@@ -26,6 +26,7 @@ const ChangeCoverPoup = ({
   onCoverImage: (image: string | null) => void;
 
   coverColor: string | null;
+  coverImage: string | null;
 }) => {
   const limitedColors = colors.slice(3, 13);
 
@@ -48,15 +49,10 @@ const ChangeCoverPoup = ({
 
       // setAttachments((prev) => [...prev, newAttachment]);
 
-  setAttachments((prev) => {
-    const updated = [...prev, newAttachment];
-
-    // 👇 automatically set cover
-    onCoverImage(newAttachment.src);
-    onCoverColor(null);
-
-    return updated;
-  });
+      setAttachments((prev) => [...prev, newAttachment]);
+      setSelectedCover(newAttachment.src);
+      onCoverImage(newAttachment.src);
+      onCoverColor(null);
     };
 
     reader.readAsDataURL(file);
@@ -107,14 +103,15 @@ const ChangeCoverPoup = ({
                 }}
               >
                 {/* show image ONLY if no color is selected */}
-                { selectedCover === img.src && !coverColor && (
-                  <Image
-                    src={img.src}
-                    alt="cover"
-                    fill
-                    className="object-cover"
-                  />
-                )}
+                {(selectedCover === img.src || coverImage === img.src) &&
+                  !coverColor && (
+                    <Image
+                      src={img.src}
+                      alt="cover"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
               </div>
             ))
           ) : (
@@ -136,25 +133,7 @@ const ChangeCoverPoup = ({
 
         {/* COLORS */}
         <p className="text-xs font-semibold mb-2">Colors</p>
-        {/* <div className="grid grid-cols-5 gap-2 mb-3">
-          {limitedColors.map((color, i) => (
-           
-            <div
-              key={i}
-              className="w-10 h-8 rounded cursor-pointer border border-gray-500"
-              style={{
-                backgroundColor: color,
-                outline: coverColor === color ? "2px solid white" : "none",
-              }}
-              onClick={() => {setCoverColor(color);
-                onCoverColor(color);
-              }}
-    {isSelected && (
-       <img src="/images/check.svg" className="w-5 h-5"/>
-        )}
-            />
-          ))}
-        </div> */}
+       
         <div className="grid grid-cols-5 gap-2 mb-3">
           {limitedColors.map((color, i) => {
             const isSelected = coverColor === color;
@@ -171,7 +150,7 @@ const ChangeCoverPoup = ({
                   if (coverColor === color) {
                     // setCoverColor(null);
                     onCoverColor(null);
-                    setSelectedCover(null)
+                    setSelectedCover(null);
                   } else {
                     // setCoverColor(color);
                     onCoverColor(color);
@@ -222,6 +201,10 @@ const ChangeCoverPoup = ({
                     updated.unshift(selected);
                     return updated;
                   });
+
+                  setSelectedCover(img.src);
+                  onCoverImage(img.src);
+                  onCoverColor(null);
                 }}
               >
                 <Image

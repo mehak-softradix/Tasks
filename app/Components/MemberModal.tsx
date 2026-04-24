@@ -31,7 +31,7 @@ const MemberModal = ({
 
 
   return (
-    <div className="absolute top-60 left-70 right-0 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
+    <div className="absolute top-55 right-80 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-sm font-semibold">Members</h2>

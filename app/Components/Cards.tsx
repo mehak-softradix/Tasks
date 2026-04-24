@@ -61,7 +61,8 @@ const Cards: React.FC<CardProps> = ({
   // const [labels, setLabels] = useState<Label[]>([]);
   const [cardMembers, setCardMembers] = useState<Member[]>([]);
   const [showChangeCoverPopup, setShowChangeCoverPopup] = useState(false);
-  const selectedTask = tasks.find((t) => t.id === activeCard?.id);
+  const selectedTask = activeCard? tasks.find((t) => t.id === activeCard?.id): null;
+
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -414,10 +415,30 @@ const Cards: React.FC<CardProps> = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setEditIndex(index);
-                    setEditText(task.text);
-                  }}
-                >
+                  
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+
+    const modalWidth = 180;
+    const gap = 10;
+
+    let left = rect.right + gap;
+
+    // prevent right overflow
+    if (left + modalWidth > window.innerWidth) {
+      left = rect.left - modalWidth - gap;
+    }
+
+    setActiveCard({
+      id: task.id,
+      index,
+      top: rect.top,
+      left,
+    });
+
+    setActiveCardId(task.id);
+  }}
+>
+                
                   <Image
                     src="/images/edit.svg"
                     alt="edit"
@@ -452,24 +473,7 @@ const Cards: React.FC<CardProps> = ({
                     }}
                   />
 
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={handleEditTask}
-                      className="bg-blue-600 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Save
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setEditIndex(null);
-                        setEditText("");
-                      }}
-                      className="text-gray-500 text-xs"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                 
                 </>
               ) : (
                 <>
@@ -483,9 +487,12 @@ const Cards: React.FC<CardProps> = ({
                         attachment: task.attachment || [],
                         priority: task.priority || [],
                         checklist: task.checklist || [],
+                        members: task.members || [],
                         index,
                         completed: task.completed,
                         colId: id,
+                        coverColor: task.coverColor ?? null, 
+                        coverImage: task.coverImage ?? null,
                       };
                       setSelectedTask(selected);
                       // router.replace(`taskId?${task.id}`);
@@ -496,7 +503,7 @@ const Cards: React.FC<CardProps> = ({
                       task.attachment.length > 0 &&
                       task.attachment[0]?.src && ( */}
                     {(task.coverColor ||
-                      (task.attachment?.length ?? 0) > 0) && (
+                      task.coverImage) && (
                       <div className="w-full h-25 relative ">
                         {/* <Image
                             src={task.attachment[0].src}
@@ -765,15 +772,18 @@ const Cards: React.FC<CardProps> = ({
                 {showChangeCoverPopup && activeCard && (
                   <ChangeCoverPoup
                     onClose={() => setShowChangeCoverPopup(false)}
-                    attachments={selectedTask?.attachment || []}
+                    // attachments={selectedTask?.attachment || []}
+                     attachments={tasks.find(t => t.id === activeCard.id)?.attachment || []}
                     setAttachments={handleSetAttachments}
                     onRemoveCover={() => {
                       handleSetAttachments([]);
                       handleSetCoverColor(null);
+                      handleSetCoverImage(null);
                     }}
                     onCoverColor={handleSetCoverColor}
                     coverColor={selectedTask?.coverColor || null}
                     onCoverImage={handleSetCoverImage}
+                    coverImage={selectedTask?.coverImage || null}
                   />
                 )}
               </div>

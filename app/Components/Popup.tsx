@@ -82,8 +82,12 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [hoveredMember, setHoveredMember] = useState<Member | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
-
-
+  const [coverColor, setCoverColor] = useState<string | null>(
+    task.coverColor ?? null,
+  );
+  const [coverImage, setCoverImage] = useState<string | null>(
+    task.coverImage ?? null,
+  );
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checklistInputRef = useRef<HTMLInputElement>(null);
@@ -141,14 +145,15 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     }
   }, [showInput]);
 
-   useEffect(() => {
+  useEffect(() => {
     setText(task.text);
     setDescription(task.description);
     setAttachments(task.attachment || []);
     setPriority(task.priority || []);
     setChecklists(task.checklist || []);
+    setCoverColor(task.coverColor ?? null);
+    setCoverImage(task.coverImage ?? null);
   }, [task]);
-
 
   // Read files and return src, name, date
   const readFilesAsDataUrls = (files: FileList) => {
@@ -227,7 +232,16 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   };
   // Save changes helper
   const handleSave = () => {
-    onUpdate(text, description, attachments, priority, checklists , cardMembers);
+    onUpdate(
+      text,
+      description,
+      attachments,
+      priority,
+      checklists,
+      cardMembers,
+      coverColor,
+      coverImage,
+    );
   };
   // useEffect(() => {
   //   setOriginalChecklists(task.checklist || []);
@@ -279,7 +293,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
             X
           </button>
 
-          {attachments.length > 0 && (
+          {/* {attachments.length > 0 && (
             <Image
               src={attachments[0].src}
               alt={attachments[0].name}
@@ -292,7 +306,52 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                 setShowImagePopup(true);
               }}
             />
-          )}
+          )} */}
+{/* 
+          {(coverColor || coverImage || attachments.length > 0) && (
+            <div
+              className="w-full h-[15vh] mt-2 rounded-lg overflow-hidden cursor-pointer"
+              style={{ backgroundColor: coverColor || "transparent" }}
+              onClick={() => {
+                if (!coverColor && attachments.length > 0) {
+                  setCurrentImage(attachments[0]);
+                  setShowImagePopup(true);
+                }
+              }}
+            >
+              {!coverColor && (coverImage || attachments.length > 0) && (
+                <Image
+                  src={coverImage || attachments[0].src}
+                  alt="cover"
+                  width={800}
+                  height={300}
+                  className="w-full h-full object-contain"
+                />
+              )}
+            </div>
+          )} */}
+          {(coverColor || coverImage) && (
+  <div
+    className="w-full h-[15vh]   overflow-hidden cursor-pointer"
+    style={{ backgroundColor: coverColor || "transparent" }}
+    onClick={() => {
+      if (!coverColor && coverImage) {
+        setCurrentImage({ src: coverImage, name: "cover", date: "" });
+        setShowImagePopup(true);
+      }
+    }}
+  >
+    {!coverColor && coverImage && (
+      <Image
+        src={coverImage}
+        alt="cover"
+        width={800}
+        height={300}
+        className="w-full h-full object-contain"
+      />
+    )}
+  </div>
+)}
         </div>
 
         {/* MAIN CONTENT */}

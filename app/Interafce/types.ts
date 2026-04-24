@@ -59,6 +59,8 @@ export interface CardProps {
       completed: boolean;
       index: number;
       colId: string;
+      coverColor?: string | null,
+      coverImage?: string |  null,
     } | null>
   >;
 }
@@ -84,6 +86,8 @@ export interface PopupProps {
     priority?: string[],
     checklist?: Checklist[],
     newMembers?: Member[],
+    coverColor?: string|null,
+    coverImage?: string|null,
 
 
   ) => void;
