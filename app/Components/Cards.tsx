@@ -801,7 +801,13 @@ const Cards: React.FC<CardProps> = ({
                 )}
                 {moveCardPopup && activeCard && (
                   <MoveCardPopup
-                    onClose={() => setMoveCardPopup(false)}
+                    //onClose={() => setMoveCardPopup(false)}
+                    onClose={() => {
+  setMoveCardPopup(false);
+  setActiveCard(null);
+  setActiveCardId(null);
+}}
+                   
                     columnOrder={columnOrder}
                     board={board}
                     selectedTask={selectedTask}
@@ -859,7 +865,7 @@ const Cards: React.FC<CardProps> = ({
 
         <div className="mt-3">
           {!showInput && (
-            <button
+            <button 
               onClick={() => {
                 setShowInput(true);
                 setEditIndex(null);
