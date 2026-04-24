@@ -39,7 +39,7 @@ import { act } from "react";
   { label: "Change members", icon: "/images/user.svg", action: "Change Members" },
   { label: "Change cover", icon: "/images/image.svg", action: "Change Cover" },
   { label: "Edit dates", icon: "/images/clock.svg" ,  action: "Edit Dates" },
-  { label: "Move", icon: "/images/right-arrow.png" , action: "Move" },
+  { label: "Move", icon: "/images/right-arrow.png" , action: "Move Card" },
   { label: "Copy card", icon: "/images/copy.svg" },
   { label: "Copy link", icon: "/images/link.svg" },
   { label: "Mirror", icon: "/images/opencard.svg" },

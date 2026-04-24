@@ -247,8 +247,10 @@ useEffect(() => {
                       setDragItem={setDragItem}
                       moveTask={moveTask}
                       setColumnOrder={setColumnOrder}
+                        columnOrder={columnOrder}
                       setSelectedTask={setSelectedTask}
                       members={members}
+                      board={board}
                     />
                   </div>
                 ))}

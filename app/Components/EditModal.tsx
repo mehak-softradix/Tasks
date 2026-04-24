@@ -1,78 +1,75 @@
-  import Image from "next/image";
-  import { options } from "../static/static";
+import Image from "next/image";
+import { options } from "../static/static";
 
-  const EditModal = ({
-    onClose,
+const EditModal = ({
+  onClose,
 
-    position,
-    onOpenCard,
-    onEditLabels,
-    onChangeMembers,
-    onChangeCover,
-    onEditDates,
-  }: {
-    onClose: () => void;
-    taskId: string;
-    position?: { top: number; left: number };
-    onOpenCard: () => void;
-    onEditLabels: () => void;
-    onChangeMembers: () => void;
-    onChangeCover: () => void;
-    onEditDates: () => void;
-  }) => {
-    const handleOptionClick = (item: any  ) => {
-        // e.stopPropagation(); 
-      if (item.action === "open") {
-        onOpenCard();
-        onClose();
-      } else if (item.label === "Edit labels") {
-        onEditLabels();
-      } else if (item.action === "Change Members") {
-        onChangeMembers();
-    
-      } 
+  position,
+  onOpenCard,
+  onEditLabels,
+  onChangeMembers,
+  onChangeCover,
 
-      else if (item.action === "Change Cover") {
-        onChangeCover();
-      }
-      else if (item.action === "Edit Dates") {
-        onEditDates();  
-      }
-      else {
-        onClose();
-      }
-    };
+  onMoveCard,
+}: {
+  onClose: () => void;
+  taskId: string;
+  position?: { top: number; left: number };
+  onOpenCard: () => void;
+  onEditLabels: () => void;
+  onChangeMembers: () => void;
+  onChangeCover: () => void;
 
-    return (
-      <div>
-        <div className="fixed inset-0 z-40" onClick={onClose} />
-        <div
-          className="fixed z-50 ml-3 "
-          style={{
-            top: position?.top,
-            left: position?.left,
-          }}
-        >
-          {options.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => handleOptionClick(item)}
-              className="flex gap-2 px-3 py-1 mt-1 bg-[#3a3939] border border-[#3f3e3e] text-[15px] font-medium rounded text-white whitespace-nowrap cursor-pointer w-max"
-            >
-              <Image
-                src={item.icon}
-                alt={item.label}
-                width={16}
-                height={16}
-                className="w-4 h-4 filter invert mt-1"
-              />
-
-              <p>{item.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+  onMoveCard: () => void;
+}) => {
+  const handleOptionClick = (item: any) => {
+    // e.stopPropagation();
+    if (item.action === "open") {
+      onOpenCard();
+      onClose();
+    } else if (item.label === "Edit labels") {
+      onEditLabels();
+    } else if (item.action === "Change Members") {
+      onChangeMembers();
+    } else if (item.action === "Change Cover") {
+      onChangeCover();
+    } else if (item.action === "Move Card") {
+      onMoveCard();
+    } else {
+      onClose();
+    }
   };
 
-  export default EditModal;
+  return (
+    <div>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div
+        className="fixed z-50 ml-3 "
+        style={{
+          top: position?.top,
+          left: position?.left,
+        }}
+      >
+        {options.map((item, index) => (
+          <div
+            key={index}
+            onClick={() => handleOptionClick(item)}
+            className="flex gap-2 px-3 py-1 mt-1 bg-[#3a3939] border border-[#3f3e3e] text-[15px] font-medium rounded text-white whitespace-nowrap cursor-pointer w-max"
+          >
+            <Image
+              src={item.icon}
+              alt={item.label}
+              width={16}
+              height={16}
+              className="w-4 h-4 filter invert mt-1"
+            />
+
+            <p>{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default EditModal;

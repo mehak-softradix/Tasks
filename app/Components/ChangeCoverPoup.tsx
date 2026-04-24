@@ -88,14 +88,7 @@ const ChangeCoverPoup = ({
                   backgroundColor: coverColor ? coverColor : "transparent",
                 }}
                 onClick={() => {
-                  //   setAttachments((prev) => {
-                  //     const updated = [...prev];
-                  //     const selected = updated.splice(i, 1)[0];
-                  //     updated.unshift(selected);
-                  //     return updated;
-                  //   });
-                  //   setCoverColor(null);
-                  // }}
+                
                   setSelectedCover(img.src);
                   onCoverImage(img.src);
                   onCoverColor(null);

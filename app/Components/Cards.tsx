@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import MemberModal from "./MemberModal";
 import Labels from "./Labels";
 import ChangeCoverPoup from "./ChangeCoverPoup";
+import MoveCardPopup from "./MoveCardPopup";
 
 const Cards: React.FC<CardProps> = ({
   id,
@@ -23,6 +24,8 @@ const Cards: React.FC<CardProps> = ({
   setColumnOrder,
   setSelectedTask,
   members,
+  columnOrder,
+  board,
 }) => {
   const [addTask, setAddTask] = useState("");
   const [showMenu, setShowMenu] = useState(false);
@@ -61,8 +64,14 @@ const Cards: React.FC<CardProps> = ({
   // const [labels, setLabels] = useState<Label[]>([]);
   const [cardMembers, setCardMembers] = useState<Member[]>([]);
   const [showChangeCoverPopup, setShowChangeCoverPopup] = useState(false);
-  const selectedTask = activeCard? tasks.find((t) => t.id === activeCard?.id): null;
+  const [moveCardPopup, setMoveCardPopup] = useState(false);
+  const selectedTask = activeCard
+    ? {...tasks.find((t) => t.id === activeCard?.id),
+      colId: id,
+      index: activeCard.index,
+    }
 
+    : null;
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -415,30 +424,30 @@ const Cards: React.FC<CardProps> = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                  
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
 
-    const modalWidth = 180;
-    const gap = 10;
+                    const rect = (
+                      e.currentTarget as HTMLElement
+                    ).getBoundingClientRect();
 
-    let left = rect.right + gap;
+                    const modalWidth = 180;
+                    const gap = 10;
 
-    // prevent right overflow
-    if (left + modalWidth > window.innerWidth) {
-      left = rect.left - modalWidth - gap;
-    }
+                    let left = rect.right + gap;
 
-    setActiveCard({
-      id: task.id,
-      index,
-      top: rect.top,
-      left,
-    });
+                    // prevent right overflow
+                    if (left + modalWidth > window.innerWidth) {
+                      left = rect.left - modalWidth - gap;
+                    }
 
-    setActiveCardId(task.id);
-  }}
->
-                
+                    setActiveCard({
+                      id: task.id,
+                      index,
+                      top: rect.top,
+                      left,
+                    });
+                    setActiveCardId(task.id);
+                  }}
+                >
                   <Image
                     src="/images/edit.svg"
                     alt="edit"
@@ -473,7 +482,7 @@ const Cards: React.FC<CardProps> = ({
                     }}
                   />
 
-                 
+                  <div className="flex gap-2 mt-2"></div>
                 </>
               ) : (
                 <>
@@ -491,7 +500,7 @@ const Cards: React.FC<CardProps> = ({
                         index,
                         completed: task.completed,
                         colId: id,
-                        coverColor: task.coverColor ?? null, 
+                        coverColor: task.coverColor ?? null,
                         coverImage: task.coverImage ?? null,
                       };
                       setSelectedTask(selected);
@@ -502,8 +511,7 @@ const Cards: React.FC<CardProps> = ({
                     {/* {task.attachment &&
                       task.attachment.length > 0 &&
                       task.attachment[0]?.src && ( */}
-                    {(task.coverColor ||
-                      task.coverImage) && (
+                    {(task.coverColor || task.coverImage) && (
                       <div className="w-full h-25 relative ">
                         {/* <Image
                             src={task.attachment[0].src}
@@ -737,7 +745,9 @@ const Cards: React.FC<CardProps> = ({
                   onChangeCover={() => {
                     setShowChangeCoverPopup(true);
                   }}
-                  onEditDates={() => {}}
+                  onMoveCard={() => {
+                    setMoveCardPopup(true);
+                  }}
                   position={{
                     top: activeCard.top,
                     left: activeCard.left,
@@ -773,7 +783,10 @@ const Cards: React.FC<CardProps> = ({
                   <ChangeCoverPoup
                     onClose={() => setShowChangeCoverPopup(false)}
                     // attachments={selectedTask?.attachment || []}
-                     attachments={tasks.find(t => t.id === activeCard.id)?.attachment || []}
+                    attachments={
+                      tasks.find((t) => t.id === activeCard.id)?.attachment ||
+                      []
+                    }
                     setAttachments={handleSetAttachments}
                     onRemoveCover={() => {
                       handleSetAttachments([]);
@@ -784,6 +797,15 @@ const Cards: React.FC<CardProps> = ({
                     coverColor={selectedTask?.coverColor || null}
                     onCoverImage={handleSetCoverImage}
                     coverImage={selectedTask?.coverImage || null}
+                  />
+                )}
+                {moveCardPopup && activeCard && (
+                  <MoveCardPopup
+                    onClose={() => setMoveCardPopup(false)}
+                    columnOrder={columnOrder}
+                    board={board}
+                    selectedTask={selectedTask}
+                    moveTask={moveTask}
                   />
                 )}
               </div>

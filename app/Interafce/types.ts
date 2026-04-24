@@ -36,6 +36,9 @@ export interface CardProps {
   members: Member[];
   setBoard: React.Dispatch<React.SetStateAction<BoardData>>;
   dragItem: { fromCol: string; index: number } | null;
+    columnOrder: { id: string; title: string }[];
+  board: any;
+
   setDragItem: React.Dispatch<
     React.SetStateAction<{ fromCol: string; index: number } | null>
   >;
