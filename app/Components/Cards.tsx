@@ -66,11 +66,11 @@ const Cards: React.FC<CardProps> = ({
   const [showChangeCoverPopup, setShowChangeCoverPopup] = useState(false);
   const [moveCardPopup, setMoveCardPopup] = useState(false);
   const selectedTask = activeCard
-    ? {...tasks.find((t) => t.id === activeCard?.id),
-      colId: id,
-      index: activeCard.index,
-    }
-
+    ? {
+        ...tasks.find((t) => t.id === activeCard?.id),
+        colId: id,
+        index: activeCard.index,
+      }
     : null;
 
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -416,7 +416,7 @@ const Cards: React.FC<CardProps> = ({
                 setDragOverIndex(index);
               }}
               onDrop={(e) => handleDrop(e, index)}
-              className={`bg-white pb-3 rounded-lg shadow-sm border-b border-gray-200 cursor-pointer relative group  ${
+              className={` task-card bg-white pb-3 rounded-lg shadow-sm border-b border-gray-200 cursor-pointer relative group   ${
                 dragOverIndex === index ? "ring-2 " : ""
               }     ${activeCardId === task.id ? "z-50" : "z-0"}`}
             >
@@ -513,20 +513,7 @@ const Cards: React.FC<CardProps> = ({
                       task.attachment[0]?.src && ( */}
                     {(task.coverColor || task.coverImage) && (
                       <div className="w-full h-25 relative ">
-                        {/* <Image
-                            src={task.attachment[0].src}
-                            alt="cover"
-                            fill
-                            className=" object-cover rounded-t-lg"
-                          /> */}
-                        {/* {!task.coverColor && (task.attachment?.length ?? 0) > 0 && (
-      <Image
-        src={task.attachment![0].src}
-        alt="cover"
-        fill
-        className="object-cover rounded-t-lg"
-      />
-    )} */}
+     
                         {!task.coverColor && task.coverImage && (
                           <Image
                             src={task.coverImage}
@@ -550,26 +537,53 @@ const Cards: React.FC<CardProps> = ({
                             onClick={(e) => {
                               e.stopPropagation();
 
-                              const rect = (
-                                e.currentTarget as HTMLElement
-                              ).getBoundingClientRect();
+                              const card = e.currentTarget.closest(
+                                ".task-card",
+                              ) as HTMLElement;
 
-                              const modalWidth = 180;
-                              const gap = 10;
+                              if (!card) return;
 
-                              let left = rect.right + gap;
+                              // const rect = (
+                              //   e.currentTarget as HTMLElement
+                              // ).getBoundingClientRect();
+                              const rect = card.getBoundingClientRect();
 
-                              // prevent right overflow
-                              if (left + modalWidth > window.innerWidth) {
-                                left = rect.left - modalWidth - gap;
+                              const modalWidth = 190;
+                              const modalHeight = 320;
+                              const gap = 4;
+
+                              let left;
+                              let top = rect.top - 8;
+
+                              // right side open by default
+                              if (
+                                rect.right + modalWidth + gap <
+                                window.innerWidth
+                              ) {
+                                left = rect.right + gap;
+                              } else {
+                                // otherwise left side
+                                left = rect.left - modalWidth - 4;
+                                top = rect.top + 20;
+                              }
+
+                              // left overflow safety
+                              if (left < 10) {
+                                left = 5;
+                              }
+
+                              // bottom overflow safety
+                              if (top + modalHeight > window.innerHeight) {
+                                top = window.innerHeight - modalHeight - 20;
                               }
 
                               setActiveCard({
                                 id: task.id,
                                 index,
-                                top: rect.top,
+                                top,
                                 left,
                               });
+
                               setActiveCardId(task.id);
                             }}
                           >
@@ -803,15 +817,15 @@ const Cards: React.FC<CardProps> = ({
                   <MoveCardPopup
                     //onClose={() => setMoveCardPopup(false)}
                     onClose={() => {
-  setMoveCardPopup(false);
-  setActiveCard(null);
-  setActiveCardId(null);
-}}
-                   
+                      setMoveCardPopup(false);
+                      setActiveCard(null);
+                      setActiveCardId(null);
+                    }}
                     columnOrder={columnOrder}
                     board={board}
                     selectedTask={selectedTask}
                     moveTask={moveTask}
+                    
                   />
                 )}
               </div>
@@ -865,7 +879,7 @@ const Cards: React.FC<CardProps> = ({
 
         <div className="mt-3">
           {!showInput && (
-            <button 
+            <button
               onClick={() => {
                 setShowInput(true);
                 setEditIndex(null);

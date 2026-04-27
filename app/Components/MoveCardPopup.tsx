@@ -18,6 +18,12 @@ const MoveCardPopup = ({
     index: number,
     targetIndex?: number,
   ) => void;
+
+  position: {
+    top: number;
+    left: number;
+
+  };
 }) => {
   const [selectedListId, setSelectedListId] = useState(
     selectedTask?.colId || columnOrder[0]?.id,
@@ -39,8 +45,8 @@ const MoveCardPopup = ({
   );
 
   useEffect(() => {
-  setSelectedPosition(board?.[selectedListId]?.length || 0);
-}, [selectedListId, board]);
+    setSelectedPosition(board?.[selectedListId]?.length || 0);
+  }, [selectedListId, board]);
   return (
     <div>
       <div className="absolute top-0 left-60 z-50">
@@ -64,7 +70,9 @@ const MoveCardPopup = ({
           <hr className="border-gray-400 my-2 " />
 
           <div>
-            <p className="text-xs font-medium mb-3 mt-3">Select destination</p>
+            <p className="text-xs font-semibold mb-3 mt-3 text-gray-400 ">
+              Select destination
+            </p>
             <h2 className="text-base font-semibold">Board</h2>
 
             {/* <select className="border border-gray-400 px-4 py-2 rounded-md w-full">
@@ -117,14 +125,16 @@ const MoveCardPopup = ({
             </div>
           </div>
 
-          <div className="flex gap-5 mt-5">
+          <div className="flex gap-2 mt-5">
             <div>
               <p className="text-sm font-semibold">List</p>
 
-              <div className="relative mt-1 w-[180px]">
+              <div className="relative mt-1 w-[200px]">
                 {/* Selected Value */}
                 <div
-                  className="border border-gray-400 bg-[#2b2b2b] px-4 py-2 rounded-md text-white flex items-center justify-between cursor-pointer"
+                  className={`border px-4 py-1.5 rounded-md text-white flex items-center justify-between cursor-pointer bg-[#2b2b2b] ${
+                    showListDropdown ? "border-blue-400" : "border-gray-400"
+                  }`}
                   onClick={() => setShowListDropdown(!showListDropdown)}
                 >
                   <span>
@@ -139,35 +149,33 @@ const MoveCardPopup = ({
                   </span>
                 </div>
 
-
                 {/* Dropdown */}
                 {showListDropdown && (
-                  <div className="absolute top-12 left-0 z-50 w-full rounded-md bg-[#2b2b2b] border border-[#4a4a4a] shadow-lg text-white">
+                  <div className="absolute top-12 left-0 z-50 w-full rounded-md bg-[#2b2b2b] border border-[#4a4a4a]  shadow-lg text-white">
                     {/* Header */}
-                    <div className="px-3 py-2 border-b border-[#3d3d3d]">
+                    <div className="px-3 py-1.5 border-b border-[#3d3d3d] ">
                       <p className="text-sm font-medium text-gray-300">
                         Select List
                       </p>
-                      <input
+                      {/* <input
                         type="text"
                         placeholder="Search list..."
                         value={listSearch}
                         onChange={(e) => setListSearch(e.target.value)}
                         className="mt-2 w-full px-2 py-1 text-sm rounded bg-[#1f1f1f] border border-[#444] text-white outline-none"
-                      />
+                      /> */}
                     </div>
 
                     {/* List Options */}
-                    <div className="max-h-[250px] overflow-y-auto">
-                             
+                    <div className="max-h-40 overflow-y-auto">
                       {filteredColumns.map((col) => (
                         <div
                           key={col.id}
                           onClick={() => {
                             setSelectedListId(col.id);
-                            setShowPositionDropdown(false); 
+                            setShowPositionDropdown(false);
                           }}
-                          className={`px-4 py-2 cursor-pointer text-[15px] font-medium transition-all flex gap-5 border-l-2 ${
+                          className={`px-4 py-1.5 cursor-pointer text-base font-medium transition-all  border-l-2 flex flex-col ${
                             selectedListId === col.id
                               ? "bg-[#0d3b66] text-[#4ea1ff]"
                               : "hover:bg-[#3a3a3a] text-gray-200 hover:border-l-2 hover:border-[#4ea1ff]"
@@ -176,21 +184,24 @@ const MoveCardPopup = ({
                           {col.title}
 
                           {selectedTask?.colId === col.id && (
-                            <span className="block text-xs text-gray-300 mt-1">
+                            <span
+                              className={` text-xs  ${
+                                selectedListId === col.id
+                                  ? "text-[#4ea1ff]"
+                                  : "text-gray-300 group-hover:text-[#4ea1ff]"
+                              }`}
+                            >
                               (current)
                             </span>
                           )}
-                          
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-  
               </div>
             </div>
 
-         
             <div>
               <p className="text-sm font-semibold">Position</p>
 
@@ -198,7 +209,9 @@ const MoveCardPopup = ({
                 {/* Selected Value */}
                 <div
                   onClick={() => setShowPositionDropdown(!showPositionDropdown)}
-                  className="border border-gray-400 bg-[#2b2b2b] px-4 py-2 rounded-md text-white flex items-center justify-between cursor-pointer"
+                  className={`border px-4 py-1.5 rounded-md text-white flex items-center justify-between cursor-pointer bg-[#2b2b2b] ${
+                    showPositionDropdown ? "border-blue-400" : "border-gray-400"
+                  }`}
                 >
                   <span>{selectedPosition + 1}</span>
 
@@ -214,7 +227,7 @@ const MoveCardPopup = ({
                     <div className="px-3 py-2 border-b border-[#3d3d3d]"></div>
 
                     {/* Position Options */}
-                    <div className="max-h-[250px] overflow-y-auto">
+                    <div className="max-h-40 overflow-y-auto">
                       {Array.from({
                         length: selectedColumn.length + 1,
                       }).map((_, index) => (
@@ -241,7 +254,7 @@ const MoveCardPopup = ({
           </div>
 
           <button
-            className="w-full mt-5 bg-blue-500 py-2 rounded-md"
+            className="w-full mt-5 bg-blue-400 py-2 rounded-md font-medium"
             onClick={() => {
               moveTask(
                 selectedTask.colId,
