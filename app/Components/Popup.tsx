@@ -53,10 +53,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     clIdx: number;
     itemId: number;
   } | null>(null);
-  // const [originalChecklists, setOriginalChecklists] = useState(
-  //   task.checklist || [],
-  // );
-
+  
   const [showInput, setShowInput] = useState<number | null>(null);
   const [newItemText, setNewItemText] = useState("");
   const [comment, setComment] = useState("");
@@ -72,13 +69,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
   ]);
 
   const [showMemberModal, setShowMemberModal] = useState(false);
-  const [cardMembers, setCardMembers] = useState<Member[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(`members-${task.id}`);
-      return saved ? JSON.parse(saved) : [];
-    }
-    return [];
-  });
+ 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [hoveredMember, setHoveredMember] = useState<Member | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
@@ -110,14 +101,6 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     return () => window.removeEventListener("storage", sync);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(`members-${task.id}`, JSON.stringify(cardMembers));
-  }, [cardMembers, task.id]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(`members-${task.id}`);
-    setCardMembers(saved ? JSON.parse(saved) : []);
-  }, [task.id]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -133,11 +116,6 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (editingItem && editTextareaRef.current) {
-  //     editTextareaRef.current.focus();
-  //   }
-  // }, [editingItem]);
 
   useEffect(() => {
     if (showInput && checklistInputRef.current) {
@@ -238,7 +216,8 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
       attachments,
       priority,
       checklists,
-      cardMembers,
+      // cardMembers,
+      task.members || [],
       coverColor,
       coverImage,
     );
@@ -254,15 +233,47 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
     return () => clearTimeout(timeout);
   }, [text, description, priority, attachments, checklists]);
 
-  const addMember = (member: Member) => {
-    if (!cardMembers.find((m) => m.id === member.id)) {
-      setCardMembers([...cardMembers, member]);
-    }
-  };
+ 
+const addMember = (
+  newMembersOrUpdater:
+    | Member[]
+    | ((prev: Member[]) => Member[])
+) => {
+  const currentMembers = task.members || [];
+
+  const updatedMembers =
+    typeof newMembersOrUpdater === "function"
+      ? newMembersOrUpdater(currentMembers)
+      : newMembersOrUpdater;
+
+  onUpdate(
+    text,
+    description,
+    attachments,
+    priority,
+    checklists,
+    updatedMembers,
+    coverColor,
+    coverImage
+  );
+};
 
   const handleRemove = (id: string) => {
-    setCardMembers(cardMembers.filter((m) => m.id !== id));
-  };
+  const updatedMembers = (task.members || []).filter(
+    (m) => m.id !== id
+  );
+
+  onUpdate(
+    text,
+    description,
+    attachments,
+    priority,
+    checklists,
+    updatedMembers,
+    coverColor,
+    coverImage
+  );
+};  
 
   const handleClose = () => {
     onClose();
@@ -293,43 +304,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
             X
           </button>
 
-          {/* {attachments.length > 0 && (
-            <Image
-              src={attachments[0].src}
-              alt={attachments[0].name}
-              width={800}
-              height={300}
-              className="w-full h-[15vh] mt-2 rounded-lg object-contain cursor-pointer"
-              onClick={() => {
-                setCurrentImage(attachments[0]);
 
-                setShowImagePopup(true);
-              }}
-            />
-          )} */}
-{/* 
-          {(coverColor || coverImage || attachments.length > 0) && (
-            <div
-              className="w-full h-[15vh] mt-2 rounded-lg overflow-hidden cursor-pointer"
-              style={{ backgroundColor: coverColor || "transparent" }}
-              onClick={() => {
-                if (!coverColor && attachments.length > 0) {
-                  setCurrentImage(attachments[0]);
-                  setShowImagePopup(true);
-                }
-              }}
-            >
-              {!coverColor && (coverImage || attachments.length > 0) && (
-                <Image
-                  src={coverImage || attachments[0].src}
-                  alt="cover"
-                  width={800}
-                  height={300}
-                  className="w-full h-full object-contain"
-                />
-              )}
-            </div>
-          )} */}
           {(coverColor || coverImage) && (
   <div
     className="w-full h-[15vh]   overflow-hidden cursor-pointer"
@@ -447,7 +422,8 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
                   Members
                 </p>
                 <div className="flex gap-2">
-                  {cardMembers.map((member) => (
+                  {/* {cardMembers.map((member) => ( */}
+                  {(task.members || []).map((member) => (
                     <span
                       key={member.id}
                       className="flex justify-center items-center bg-blue-500 text-white text-xs font-bold w-7 h-7 rounded-full "
@@ -482,8 +458,8 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
               {showMemberModal && (
                 <MemberModal
                   onClose={() => setShowMemberModal(false)}
-                  cardMembers={cardMembers}
-                  setCardMembers={setCardMembers}
+                  cardMembers={task.members|| []}
+                  setCardMembers={addMember}
                   members={members}
                 />
               )}
@@ -607,16 +583,7 @@ const Popup = ({ task, onClose, onUpdate, members }: PopupProps) => {
 
                     {showMenu === idx && (
                       <div className="absolute right-2 top-10 bg-white shadow-md text-gray-500 rounded-md  z-10">
-                        {/* <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 w-full cursor-pointer">
-                            <Image
-                              alt="edit"
-                              width={16}
-                              height={16}
-                              src="/images/protectededit.svg"
-                              className="w-4 h-4"
-                            />
-                            <span className="text-sm text-black">Editt</span>
-                          </button> */}
+                        
                         <button
                           onClick={() => {
                             setSelectedIndex(idx);

@@ -163,13 +163,6 @@ const MoveCardPopup = ({
                       <p className="text-sm font-medium text-gray-300">
                         Select List
                       </p>
-                      {/* <input
-                        type="text"
-                        placeholder="Search list..."
-                        value={listSearch}
-                        onChange={(e) => setListSearch(e.target.value)}
-                        className="mt-2 w-full px-2 py-1 text-sm rounded bg-[#1f1f1f] border border-[#444] text-white outline-none"
-                      /> */}
                     </div>
 
                     {/* List Options */}

@@ -55,14 +55,10 @@ const Cards: React.FC<CardProps> = ({
   } | null>(null);
 
   const [priority, setPriority] = useState<string[]>([]);
-  // const [priorities, setPriorities] = useState<Label[]>([
-  //   { title: "High Priority", color: "#ef4444" },
-  //   { title: "Medium Priority", color: "#eab308" },
-  //   { title: "Low Priority", color: "#22c55e" },
-  // ]);
+
   const [priorities, setPriorities] = useState<Label[]>([]);
   // const [labels, setLabels] = useState<Label[]>([]);
-  const [cardMembers, setCardMembers] = useState<Member[]>([]);
+  // const [cardMembers, setCardMembers] = useState<Member[]>([]);
   const [showChangeCoverPopup, setShowChangeCoverPopup] = useState(false);
   const [moveCardPopup, setMoveCardPopup] = useState(false);
   const selectedTask = activeCard
@@ -293,14 +289,22 @@ const Cards: React.FC<CardProps> = ({
     }
   }, [priorities]);
 
-  useEffect(() => {
-    if (activeCard) {
-      localStorage.setItem(
-        `members-${activeCard.id}`,
-        JSON.stringify(cardMembers),
-      );
-    }
-  }, [cardMembers, activeCard]);
+  // useEffect(() => {
+  //   if (!activeCard) return;
+  //     localStorage.setItem(
+  //       `members-${activeCard.id}`,
+  //       JSON.stringify(cardMembers),
+  //     );
+  //     setBoard((prev) => ({
+  //   ...prev,
+  //   [id]: prev[id].map((task) =>
+  //     task.id === activeCard.id
+  //       ? { ...task, members: cardMembers }
+  //       : task
+  //   ),
+  // }));
+
+  // }, [cardMembers, activeCard , id]);
 
   console.log("moveCard", moveCardPopup);
   return (
@@ -672,34 +676,34 @@ const Cards: React.FC<CardProps> = ({
                       />
                     </div>
 
-                    <div className=" flex gap-5  items-center ml-2">
-                      <div className="  relative w-3.5 h-3.5 ml-2">
+                    <div className="flex items-center justify-between pl-3 w-full">
+                      <div className="relative w-3.5 h-3.5">
                         <Image src="/images/attach.svg" alt="attach" fill />
+
                         {task.attachment && task.attachment.length > 0 && (
-                          <span className="text-[15px] font-medium text-gray-600 absolute -top-1 left-5 px-1 ">
+                          <span className="text-[15px] font-medium text-gray-600 absolute -top-1 left-5 px-1">
                             {task.attachment.length}
                           </span>
                         )}
                       </div>
-                      <div className="">
-                        {task.members && task.members.length > 0 && (
-                          <div className="flex  gap-5 px-3 mt-2 ml-20">
-                            {task.members.map((m) => (
-                              <div
-                                key={m.id}
-                                className="w-6 h-6 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold"
-                              >
-                                {m.name
-                                  .split(" ")
-                                  .map((w) => w[0])
-                                  .slice(0, 2)
-                                  .join("")
-                                  .toUpperCase()}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+
+                      {task.members && task.members.length > 0 && (
+                        <div className="flex gap-2">
+                          {task.members.map((m) => (
+                            <div
+                              key={m.id}
+                              className="w-6 h-6 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold"
+                            >
+                              {(m.name || "")
+                                .split(" ")
+                                .map((w) => w[0])
+                                .slice(0, 2)
+                                .join("")
+                                .toUpperCase()}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -766,16 +770,6 @@ const Cards: React.FC<CardProps> = ({
                     const task = tasks.find((t) => t.id === activeCard.id);
                     if (task) handleOpenCard(task, id);
                   }}
-                  // onEditLabels={() => {
-                  //   const task = tasks.find((t) => t.id === activeCard?.id);
-
-                  //   if (task) {
-                  //     setPriority(task.priority || []);
-                  //   }
-
-                  //   setPriorityDropdownOpen(true);
-                  // }}
-
                   onEditLabels={(buttonRect) => {
                     const task = tasks.find((t) => t.id === activeCard?.id);
                     if (task) {
@@ -819,10 +813,10 @@ const Cards: React.FC<CardProps> = ({
                   onChangeMembers={(buttonRect) => {
                     if (!activeCard) return;
 
-                    const saved = localStorage.getItem(
-                      `members-${activeCard.id}`,
-                    );
-                    setCardMembers(saved ? JSON.parse(saved) : []);
+                    // const saved = localStorage.getItem(
+                    //   `members-${activeCard.id}`,
+                    // );
+                    // setCardMembers(saved ? JSON.parse(saved) : []);
 
                     // same popup position logic
                     const modalWidth = 190;
@@ -928,7 +922,7 @@ const Cards: React.FC<CardProps> = ({
                       colId: id,
                       index: activeCard.index,
                     });
-                    setActiveCardId(null);
+                    // setActiveCardId(null);
                     setMoveCardPopup(true);
                   }}
                   position={{
@@ -957,8 +951,29 @@ const Cards: React.FC<CardProps> = ({
                   <div className="fixed inset-0 z-80 left-90 top-[-190] flex items-center justify-center">
                     <MemberModal
                       members={members}
-                      cardMembers={cardMembers}
-                      setCardMembers={setCardMembers}
+                      // cardMembers={cardMembers}
+                      cardMembers={
+                        tasks.find((t) => t.id === activeCard.id)?.members || []
+                      }
+                      // setCardMembers={setCardMembers}
+                      setCardMembers={(newMembers) => {
+                        const updated =
+                          typeof newMembers === "function"
+                            ? newMembers(
+                                tasks.find((t) => t.id === activeCard.id)
+                                  ?.members || [],
+                              )
+                            : newMembers;
+
+                        setBoard((prev) => ({
+                          ...prev,
+                          [id]: prev[id].map((task) =>
+                            task.id === activeCard.id
+                              ? { ...task, members: updated }
+                              : task,
+                          ),
+                        }));
+                      }}
                       onClose={() => setOpenMemberModal(false)}
                       position={labelPosition}
                     />
@@ -985,21 +1000,7 @@ const Cards: React.FC<CardProps> = ({
                     coverImage={selectedTask?.coverImage || null}
                   />
                 )}
-                {/* {moveCardPopup && activeCard && selectedTask && (
-                  <MoveCardPopup
-                    position={labelPosition}
-                    //onClose={() => setMoveCardPopup(false)}
-                    onClose={() => {
-                      setMoveCardPopup(false);
-                      setActiveCard(null);
-                      setActiveCardId(null);
-                    }}
-                    columnOrder={columnOrder}
-                    board={board}
-                    selectedTask={selectedTask}
-                    moveTask={moveTask}
-                  />
-                )} */}
+            
               </div>
             </div>
           </>
@@ -1012,6 +1013,7 @@ const Cards: React.FC<CardProps> = ({
             onClose={() => {
               setMoveCardPopup(false);
               setMoveCardTask(null);
+              setActiveCard(null);
             }}
             columnOrder={columnOrder}
             board={board}

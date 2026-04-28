@@ -75,7 +75,7 @@ const MemberModal = ({
 
             <button
               onClick={() => removeMember(member.id)}
-              className="text-gray-400 hover:text-red-400"
+              className="text-gray-400 hover:text-gray-100"
             >
               ✕
             </button>
