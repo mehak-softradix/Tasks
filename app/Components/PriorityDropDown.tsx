@@ -18,10 +18,7 @@ const PriorityDropDown = ({
   const [newPriority, setNewPriority] = useState("");
 
   const [showLabelModal, setShowLabelModal] = useState(false);
-  
-  // const [editingLabel, setEditingLabel] = useState<
-  //   (Label & { index?: number; type?: "label" | "priority" }) | null
-  // >(null);
+ 
 const [editingLabel, setEditingLabel] = useState<
   (Label & { type?: "priority" }) | null
 >(null);
@@ -47,13 +44,6 @@ const [editingLabel, setEditingLabel] = useState<
     }
   }, []);
 
-  // Load labels
-  // useEffect(() => {
-  //   const savedLabels = localStorage.getItem("labels");
-  //   if (savedLabels) {
-  //     setLabels(JSON.parse(savedLabels));
-  //   }
-  // }, []);
 
   // Save priorities
   useEffect(() => {
@@ -62,10 +52,6 @@ const [editingLabel, setEditingLabel] = useState<
     }
   }, [priorities]);
 
-  // Save labels
-  // useEffect(() => {
-  //   localStorage.setItem("labels", JSON.stringify(labels));
-  // }, [labels]);
 
   // Add new priority
   const handleAddPriority = () => {
@@ -78,24 +64,6 @@ const [editingLabel, setEditingLabel] = useState<
     ]);
     setNewPriority("");
   };
-
-  // const handleDelete = () => {
-  //   if (!editingLabel) return;
-
-  //   // if (editingLabel.type === "label" && editingLabel.index !== undefined) {
-  //   //   setLabels((prev) => prev.filter((_, i) => i !== editingLabel.index));
-  //   // } 
-  //   else if (editingLabel.type === "priority") {
-  //     setPriorities((prev) =>
-  //       prev.filter((p) => p.title !== editingLabel.title),
-  //     );
-
-  //     setPriority((prev) => prev.filter((p) => p !== editingLabel.title));
-  //   }
-
-  //   setShowLabelModal(false);
-  //   setEditingLabel(null);
-  // };
 
   const handleDelete = () => {
   if (!editingLabel) return;
@@ -167,38 +135,7 @@ const [editingLabel, setEditingLabel] = useState<
               </button>
             </div>
 
-            {/* Labels */}
-            {/* {labels.length > 0 && (
-              <div className="mt-3">
-                {labels.map((label, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between gap-2 mb-1"
-                  >
-                    <div
-                      className="flex items-center gap-2 px-3 py-2 text-sm rounded-md text-white flex-1"
-                      style={{ backgroundColor: label.color }}
-                    >
-                      <input type="checkbox" />
-                      {label.title}
-                    </div>
-
-                    <Image                
-                      src="/images/edit.svg"
-                      className=" filter invert cursor-pointer"
-                            alt="EDIT"  
-                        width={20}  
-                        height={20}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingLabel({ ...label, index, type: "label" });
-                        setShowLabelModal(true);
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            )} */}
+  
 
             {/* Priorities */}
             {priorities.map((item, index) => (
@@ -255,35 +192,7 @@ const [editingLabel, setEditingLabel] = useState<
           <LabelDropDown
             onClose={() => setShowLabelModal(false)}
             onDelete={handleDelete}
-            // onSave={(newLabel) => {
-            //   if (
-            //     editingLabel?.type === "label" &&
-            //     editingLabel.index !== undefined
-            //   ) {
-            //     setLabels((prev) =>
-            //       prev.map((label, i) =>
-            //         i === editingLabel.index ? newLabel : label,
-            //       ),
-            //     );
-            //   } else if (editingLabel?.type === "priority") {
-            //     setPriorities((prev) =>
-            //       prev.map((p) =>
-            //         p.title === editingLabel.title ? newLabel : p,
-            //       ),
-            //     );
-
-            //     setPriority((prev) =>
-            //       prev.map((p) =>
-            //         p === editingLabel.title ? newLabel.title : p,
-            //       ),
-            //     );
-            //   } else {
-            //     setLabels((prev) => [...prev, newLabel]);
-            //   }
-
-            //   setShowLabelModal(false);
-            //   setEditingLabel(null);
-            // }}
+     
             onSave={(newLabel) => {
   setPriorities((prev) =>
     prev.map((p) =>

@@ -200,19 +200,6 @@ const Cards: React.FC<CardProps> = ({
     setPriority(newPriority);
   };
 
-  //   const handleSetAttachments = (newAttachments) => {
-  //   if (!activeCard) return;
-
-  //   setBoard((prev) => ({
-  //     ...prev,
-  //     [id]: prev[id].map((task) =>
-  //       task.id === activeCard.id
-  //         ? { ...task, attachment: newAttachments }
-  //         : task
-  //     ),
-  //   }));
-  // };
-
   const handleSetAttachments = (
     newAttachmentsOrUpdater:
       | Attachment[]
@@ -289,24 +276,6 @@ const Cards: React.FC<CardProps> = ({
     }
   }, [priorities]);
 
-  // useEffect(() => {
-  //   if (!activeCard) return;
-  //     localStorage.setItem(
-  //       `members-${activeCard.id}`,
-  //       JSON.stringify(cardMembers),
-  //     );
-  //     setBoard((prev) => ({
-  //   ...prev,
-  //   [id]: prev[id].map((task) =>
-  //     task.id === activeCard.id
-  //       ? { ...task, members: cardMembers }
-  //       : task
-  //   ),
-  // }));
-
-  // }, [cardMembers, activeCard , id]);
-
-  console.log("moveCard", moveCardPopup);
   return (
     <>
       <div
@@ -813,11 +782,6 @@ const Cards: React.FC<CardProps> = ({
                   onChangeMembers={(buttonRect) => {
                     if (!activeCard) return;
 
-                    // const saved = localStorage.getItem(
-                    //   `members-${activeCard.id}`,
-                    // );
-                    // setCardMembers(saved ? JSON.parse(saved) : []);
-
                     // same popup position logic
                     const modalWidth = 190;
                     const modalHeight = 320;
@@ -922,7 +886,7 @@ const Cards: React.FC<CardProps> = ({
                       colId: id,
                       index: activeCard.index,
                     });
-                    // setActiveCardId(null);
+                    //  setActiveCardId(null);
                     setMoveCardPopup(true);
                   }}
                   position={{
@@ -1000,7 +964,6 @@ const Cards: React.FC<CardProps> = ({
                     coverImage={selectedTask?.coverImage || null}
                   />
                 )}
-            
               </div>
             </div>
           </>
@@ -1012,7 +975,12 @@ const Cards: React.FC<CardProps> = ({
             position={labelPosition}
             onClose={() => {
               setMoveCardPopup(false);
-              setMoveCardTask(null);
+            }}
+            onMoveSuccess={() => {
+              // sirf Move button pe chale
+              setMoveCardPopup(false);
+              setActiveCard(null);
+              setActiveCardId(null);
               setActiveCard(null);
             }}
             columnOrder={columnOrder}

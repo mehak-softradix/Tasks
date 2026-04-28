@@ -165,7 +165,7 @@ useEffect(() => {
   return (
     <>
       <div className="fixed inset-0  bg-black/70 backdrop-blur-sm "></div>
-      <div className="flex  h-screen p-5 pl-0 gap-2 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="flex  h-screen p-2 pl-0 gap-2 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <Sidebar setBoard={setBoard} setColumnOrder={setColumnOrder} />
 
         <div className="relative flex-1 rounded-lg overflow-hidden">

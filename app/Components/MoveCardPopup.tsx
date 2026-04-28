@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 
 const MoveCardPopup = ({
@@ -8,8 +8,10 @@ const MoveCardPopup = ({
   selectedTask,
   moveTask,
   position,
+  onMoveSuccess,
 }: {
   onClose: () => void;
+  onMoveSuccess: () => void;
   columnOrder: { id: string; title: string }[];
   board: any;
   selectedTask: any;
@@ -43,12 +45,31 @@ const MoveCardPopup = ({
   const filteredColumns = columnOrder.filter((col) =>
     col.title.toLowerCase().includes(listSearch.toLowerCase()),
   );
+const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setSelectedPosition(board?.[selectedListId]?.length || 0);
   }, [selectedListId, board]);
+
+  useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (
+      popupRef.current &&
+      !popupRef.current.contains(event.target as Node)
+    ) {
+      onClose(); // popup close
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
   return (
-    <div>
+    <>
+     
       <div
         className="absolute z-50"
         style={{
@@ -56,7 +77,10 @@ const MoveCardPopup = ({
           left: position?.left,
         }}
       >
-        <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
+        <div
+          ref={popupRef} className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative"
+          
+        >
           <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
             Move Card
           </h1>
@@ -172,7 +196,7 @@ const MoveCardPopup = ({
                           key={col.id}
                           onClick={() => {
                             setSelectedListId(col.id);
-                            setShowPositionDropdown(false);
+                            setShowListDropdown(false);
                           }}
                           className={`px-4 py-1.5 cursor-pointer text-base font-medium transition-all  border-l-2 flex flex-col ${
                             selectedListId === col.id
@@ -253,7 +277,7 @@ const MoveCardPopup = ({
           </div>
 
           <button
-            className="w-full mt-5 bg-blue-400 py-2 rounded-md font-medium"
+            className="w-full mt-5 bg-blue-400 py-2 rounded-md font-semibold"
             onClick={() => {
               moveTask(
                 selectedTask.colId,
@@ -261,14 +285,15 @@ const MoveCardPopup = ({
                 selectedTask.index,
                 selectedPosition,
               );
-              onClose();
+       
+              onMoveSuccess();
             }}
           >
             Move
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
