@@ -73,6 +73,13 @@ const Cards: React.FC<CardProps> = ({
       }
     : null;
 
+  const [labelPosition, setLabelPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+
+  const [moveCardTask, setMoveCardTask] = useState<any>(null);
+
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -295,6 +302,7 @@ const Cards: React.FC<CardProps> = ({
     }
   }, [cardMembers, activeCard]);
 
+  console.log("moveCard", moveCardPopup);
   return (
     <>
       <div
@@ -425,18 +433,41 @@ const Cards: React.FC<CardProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
 
-                    const rect = (
-                      e.currentTarget as HTMLElement
-                    ).getBoundingClientRect();
+                    const card = e.currentTarget.closest(
+                      ".task-card",
+                    ) as HTMLElement;
 
-                    const modalWidth = 180;
-                    const gap = 10;
+                    if (!card) return;
 
-                    let left = rect.right + gap;
+                    // const rect = (
+                    //   e.currentTarget as HTMLElement
+                    // ).getBoundingClientRect();
+                    const rect = card.getBoundingClientRect();
 
-                    // prevent right overflow
-                    if (left + modalWidth > window.innerWidth) {
-                      left = rect.left - modalWidth - gap;
+                    const modalWidth = 190;
+                    const modalHeight = 320;
+                    const gap = 4;
+
+                    let left;
+                    let top = rect.top - 8;
+
+                    // right side open by default
+                    if (rect.right + modalWidth + gap < window.innerWidth) {
+                      left = rect.right + gap;
+                    } else {
+                      // otherwise left side
+                      left = rect.left - modalWidth - 4;
+                      top = rect.top + 20;
+                    }
+
+                    // left overflow safety
+                    if (left < 10) {
+                      left = 5;
+                    }
+
+                    // bottom overflow safety
+                    if (top + modalHeight > window.innerHeight) {
+                      top = window.innerHeight - modalHeight - 20;
                     }
 
                     setActiveCard({
@@ -513,7 +544,6 @@ const Cards: React.FC<CardProps> = ({
                       task.attachment[0]?.src && ( */}
                     {(task.coverColor || task.coverImage) && (
                       <div className="w-full h-25 relative ">
-     
                         {!task.coverColor && task.coverImage && (
                           <Image
                             src={task.coverImage}
@@ -736,30 +766,169 @@ const Cards: React.FC<CardProps> = ({
                     const task = tasks.find((t) => t.id === activeCard.id);
                     if (task) handleOpenCard(task, id);
                   }}
-                  onEditLabels={() => {
-                    const task = tasks.find((t) => t.id === activeCard?.id);
+                  // onEditLabels={() => {
+                  //   const task = tasks.find((t) => t.id === activeCard?.id);
 
+                  //   if (task) {
+                  //     setPriority(task.priority || []);
+                  //   }
+
+                  //   setPriorityDropdownOpen(true);
+                  // }}
+
+                  onEditLabels={(buttonRect) => {
+                    const task = tasks.find((t) => t.id === activeCard?.id);
                     if (task) {
                       setPriority(task.priority || []);
                     }
 
+                    // Calculate position from the passed rect
+                    const modalWidth = 190;
+                    const modalHeight = 320;
+                    const gap = 4;
+                    const extraLeftShift = 120;
+
+                    let left;
+                    let top = buttonRect.top - 8;
+
+                    if (
+                      buttonRect.right + modalWidth + gap <
+                      window.innerWidth
+                    ) {
+                      left = buttonRect.right + gap - extraLeftShift;
+                    } else {
+                      left =
+                        buttonRect.left - modalWidth - gap - extraLeftShift;
+                      top = buttonRect.top + 20;
+                    }
+
+                    if (left < 10) {
+                      left = 5;
+                    }
+
+                    if (top + modalHeight > window.innerHeight) {
+                      top = window.innerHeight - modalHeight - 20;
+                    }
+
+                    setLabelPosition({
+                      top: top,
+                      left,
+                    });
                     setPriorityDropdownOpen(true);
                   }}
-                  onChangeMembers={() => {
+                  onChangeMembers={(buttonRect) => {
                     if (!activeCard) return;
 
                     const saved = localStorage.getItem(
                       `members-${activeCard.id}`,
                     );
-
                     setCardMembers(saved ? JSON.parse(saved) : []);
+
+                    // same popup position logic
+                    const modalWidth = 190;
+                    const modalHeight = 320;
+                    const gap = 4;
+                    const extraLeftShift = 190;
+
+                    let left;
+                    let top = buttonRect.top - 8;
+
+                    // Right side me enough space ho
+                    if (
+                      buttonRect.right + modalWidth + gap <
+                      window.innerWidth
+                    ) {
+                      // Right side open
+                      left = buttonRect.right + gap - extraLeftShift;
+                    } else {
+                      // Left side open
+                      left = buttonRect.left - modalWidth - gap;
+                      top = buttonRect.top + 20;
+                    }
+
+                    // screen se bahar na jaaye
+                    if (left < 10) left = 10;
+
+                    if (top + modalHeight > window.innerHeight) {
+                      top = window.innerHeight - modalHeight - 20;
+                    }
+                    setLabelPosition({ top, left });
 
                     setOpenMemberModal(true);
                   }}
-                  onChangeCover={() => {
+                  onChangeCover={(buttonRect) => {
+                    const modalWidth = 190;
+                    const modalHeight = 320;
+                    const gap = 4;
+                    const extraLeftShift = 150;
+
+                    let left;
+                    let top = buttonRect.top - 8;
+
+                    if (
+                      buttonRect.right + modalWidth + gap <
+                      window.innerWidth
+                    ) {
+                      left = buttonRect.right + gap - extraLeftShift;
+                    } else {
+                      left =
+                        buttonRect.left - modalWidth - gap - extraLeftShift;
+                      top = buttonRect.top + 20;
+                    }
+
+                    if (left < 10) {
+                      left = 5;
+                    }
+
+                    if (top + modalHeight > window.innerHeight) {
+                      top = window.innerHeight - modalHeight - 20;
+                    }
+
+                    setLabelPosition({
+                      top,
+                      left,
+                    });
+
                     setShowChangeCoverPopup(true);
                   }}
-                  onMoveCard={() => {
+                  onMoveCard={(buttonRect) => {
+                    const modalWidth = 190;
+                    const modalHeight = 320;
+                    const gap = 4;
+                    const extraLeftShift = 450;
+
+                    let left;
+                    let top = buttonRect.top - 8;
+
+                    if (
+                      buttonRect.right + modalWidth + gap <
+                      window.innerWidth
+                    ) {
+                      left = buttonRect.right + gap - extraLeftShift;
+                    } else {
+                      left =
+                        buttonRect.left - modalWidth - gap - extraLeftShift;
+                      top = buttonRect.top + 20;
+                    }
+
+                    if (left < 10) {
+                      left = 5;
+                    }
+
+                    if (top + modalHeight > window.innerHeight) {
+                      top = window.innerHeight - modalHeight - 20;
+                    }
+
+                    setLabelPosition({
+                      top,
+                      left,
+                    });
+                    setMoveCardTask({
+                      ...tasks.find((t) => t.id === activeCard?.id),
+                      colId: id,
+                      index: activeCard.index,
+                    });
+                    setActiveCardId(null);
                     setMoveCardPopup(true);
                   }}
                   position={{
@@ -770,6 +939,7 @@ const Cards: React.FC<CardProps> = ({
 
                 {priorityDropdownOpen && (
                   <Labels
+                    position={labelPosition}
                     onClose={() => setPriorityDropdownOpen(false)}
                     selected={priority}
                     setSelected={(value) => {
@@ -790,11 +960,13 @@ const Cards: React.FC<CardProps> = ({
                       cardMembers={cardMembers}
                       setCardMembers={setCardMembers}
                       onClose={() => setOpenMemberModal(false)}
+                      position={labelPosition}
                     />
                   </div>
                 )}
                 {showChangeCoverPopup && activeCard && (
                   <ChangeCoverPoup
+                    position={labelPosition}
                     onClose={() => setShowChangeCoverPopup(false)}
                     // attachments={selectedTask?.attachment || []}
                     attachments={
@@ -813,8 +985,9 @@ const Cards: React.FC<CardProps> = ({
                     coverImage={selectedTask?.coverImage || null}
                   />
                 )}
-                {moveCardPopup && activeCard && (
+                {/* {moveCardPopup && activeCard && selectedTask && (
                   <MoveCardPopup
+                    position={labelPosition}
                     //onClose={() => setMoveCardPopup(false)}
                     onClose={() => {
                       setMoveCardPopup(false);
@@ -825,16 +998,27 @@ const Cards: React.FC<CardProps> = ({
                     board={board}
                     selectedTask={selectedTask}
                     moveTask={moveTask}
-                    
                   />
-                )}
+                )} */}
               </div>
             </div>
           </>
         )}
 
         {/* Add Card Button */}
-
+        {moveCardPopup && moveCardTask && (
+          <MoveCardPopup
+            position={labelPosition}
+            onClose={() => {
+              setMoveCardPopup(false);
+              setMoveCardTask(null);
+            }}
+            columnOrder={columnOrder}
+            board={board}
+            selectedTask={moveCardTask}
+            moveTask={moveTask}
+          />
+        )}
         {showInput && (
           <div className="mt-3 bg-white p-3 rounded-lg shadow-sm border border-gray-200">
             <textarea

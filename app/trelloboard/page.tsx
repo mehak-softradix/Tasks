@@ -117,7 +117,7 @@ useEffect(() => {
 
         return { ...prev, [from]: sourceList };
       } else {
-        const destList = [...prev[to]];
+        const destList = [...prev[to] || []];
         const newIndex = targetIndex ?? destList.length;
         destList.splice(newIndex, 0, task);
 

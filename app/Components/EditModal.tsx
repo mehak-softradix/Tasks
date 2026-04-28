@@ -16,25 +16,30 @@ const EditModal = ({
   taskId: string;
   position?: { top: number; left: number };
   onOpenCard: () => void;
-  onEditLabels: () => void;
-  onChangeMembers: () => void;
-  onChangeCover: () => void;
+  onEditLabels: (rect: DOMRect) => void;
+  onChangeMembers: (rect: DOMRect) => void;
+  onChangeCover: (rect: DOMRect) => void;
 
-  onMoveCard: () => void;
+  onMoveCard: (rect: DOMRect) => void;
 }) => {
-  const handleOptionClick = (item: any) => {
-    // e.stopPropagation();
+  const handleOptionClick = (item: any, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (item.action === "open") {
       onOpenCard();
       onClose();
     } else if (item.label === "Edit labels") {
-      onEditLabels();
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      onEditLabels(rect);
     } else if (item.action === "Change Members") {
-      onChangeMembers();
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      onChangeMembers(rect);
     } else if (item.action === "Change Cover") {
-      onChangeCover();
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      onChangeCover(rect);
     } else if (item.action === "Move Card") {
-      onMoveCard();
+      console.log("move clicked")
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      onMoveCard(rect);
     } else {
       onClose();
     }
@@ -53,7 +58,7 @@ const EditModal = ({
         {options.map((item, index) => (
           <div
             key={index}
-            onClick={() => handleOptionClick(item)}
+            onClick={(e) => handleOptionClick(item, e)}
             className="flex gap-2 px-3 py-1 mt-1 bg-[#3a3939] border border-[#3f3e3e] text-[15px] font-medium rounded text-white whitespace-nowrap cursor-pointer w-max"
           >
             <Image

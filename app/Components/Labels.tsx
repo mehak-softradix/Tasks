@@ -17,12 +17,14 @@ const Labels = ({
   setSelected,
   labels,
   setLabels,
+  position,
 }: {
   onClose: () => void;
   selected: string[];
   setSelected: React.Dispatch<React.SetStateAction<string[]>>;
   labels: Label[];
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
+    position: { top: number; left: number };
 }) => {
   const [search, setSearch] = useState("");
 
@@ -55,7 +57,11 @@ const Labels = ({
 
 
   return (
-    <div className="absolute top-[-50] left-60 z-50">
+    // <div className="absolute top-[-50] left-60 z-50">
+    <div
+      className="fixed z-50 mt-10"
+      style={{ top: position.top, left: position.left }}  
+    >
       <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
         {/* Header */}
         <h1 className="text-md font-semibold text-gray-300 text-center mb-3">

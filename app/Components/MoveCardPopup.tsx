@@ -7,6 +7,7 @@ const MoveCardPopup = ({
   board,
   selectedTask,
   moveTask,
+  position,
 }: {
   onClose: () => void;
   columnOrder: { id: string; title: string }[];
@@ -22,7 +23,6 @@ const MoveCardPopup = ({
   position: {
     top: number;
     left: number;
-
   };
 }) => {
   const [selectedListId, setSelectedListId] = useState(
@@ -49,7 +49,13 @@ const MoveCardPopup = ({
   }, [selectedListId, board]);
   return (
     <div>
-      <div className="absolute top-0 left-60 z-50">
+      <div
+        className="absolute z-50"
+        style={{
+          top: position?.top,
+          left: position?.left,
+        }}
+      >
         <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
           <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
             Move Card

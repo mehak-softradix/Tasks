@@ -1,21 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
-import { MemberModalProps, Member, } from "../Interafce/types";
-import { getInitials  } from "../static/static";
+import { MemberModalProps, Member } from "../Interafce/types";
+import { getInitials } from "../static/static";
 
 const MemberModal = ({
   onClose,
   cardMembers,
   setCardMembers,
   members: boardMembers,
-}: MemberModalProps) => {
+  position,
+}: MemberModalProps & {
+  position: { top: number; left: number };
+}) => {
   const [search, setSearch] = useState("");
 
-  const filteredMembers = (boardMembers || []).filter((m) =>
-    (m?.name ?? "").toLowerCase().includes(search.toLowerCase()),
-  )
-  .filter((m) => !cardMembers.some((cm) => cm.id === m.id));
+  const filteredMembers = (boardMembers || [])
+    .filter((m) => (m?.name ?? "").toLowerCase().includes(search.toLowerCase()))
+    .filter((m) => !cardMembers.some((cm) => cm.id === m.id));
 
   const addMember = (member: Member) => {
     if (!cardMembers.find((m) => m.id === member.id)) {
@@ -29,9 +31,15 @@ const MemberModal = ({
     onClose();
   };
 
-
   return (
-    <div className="absolute top-55 right-0 left-70 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
+    // <div className="absolute top-55 right-0 left-70 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
+    <div
+      className="fixed w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-50 h-[30vh] overflow-y-auto mt-15"
+      style={{
+        top: position?.top,
+        left: position?.left,
+      }}
+    >
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-sm font-semibold">Members</h2>

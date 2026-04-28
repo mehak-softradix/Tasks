@@ -17,6 +17,7 @@ const ChangeCoverPoup = ({
   coverColor,
   onCoverImage,
   coverImage,
+  position,
 }: {
   onClose: () => void;
   attachments: Attachment[];
@@ -27,6 +28,7 @@ const ChangeCoverPoup = ({
 
   coverColor: string | null;
   coverImage: string | null;
+     position: { top: number; left: number };
 }) => {
   const limitedColors = colors.slice(3, 13);
 
@@ -63,7 +65,11 @@ const ChangeCoverPoup = ({
   }, []);
 
   return (
-    <div className="absolute top-0 left-60 z-50">
+    // <div className="absolute top-0 left-60 z-50">
+     <div
+      className="fixed z-50 mt-10"
+      style={{ top: position.top, left: position.left }}  
+    >
       <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
         <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
           Cover
