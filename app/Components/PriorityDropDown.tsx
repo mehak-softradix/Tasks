@@ -82,7 +82,7 @@ const [editingLabel, setEditingLabel] = useState<
 
   return (
     <div>
-      
+
       <div
         className="flex gap-2 relative cursor-pointer"
         onClick={() => setOpen(!open)}

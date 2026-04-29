@@ -58,8 +58,9 @@ const Labels = ({
 
   return (
     // <div className="absolute top-[-50] left-60 z-50">
+     <div className="fixed inset-0 z-50" onClick={onClose}>
     <div
-      className="fixed z-50 mt-10"
+      className="absolute"
       style={{ top: position.top, left: position.left }}  
     >
       <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
@@ -68,7 +69,7 @@ const Labels = ({
           Labels
         </h1>
         <button
-          className="absolute top-3 right-3 text-gray-400 hover:text-white"
+          className="absolute top-3 right-3 text-gray-400 hover:text-white cursor-pointer"
           onClick={onClose}
         >
           
@@ -166,19 +167,20 @@ const Labels = ({
               setEditingLabel(null);
               setShowLabelModal(true);
             }}
-            className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm"
+            className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm cursor-pointer"
           >
             Create a new label
           </button>
-          <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm">
+          <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm cursor-pointer">
             Show more labels
           </button>
           <hr className="border-gray-600 my-2" />
-          <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm">
+          <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm cursor-pointer">
             Enable colorblind friendly mode
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

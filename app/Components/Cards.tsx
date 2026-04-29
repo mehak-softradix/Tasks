@@ -853,7 +853,7 @@ const Cards: React.FC<CardProps> = ({
                     const modalWidth = 190;
                     const modalHeight = 320;
                     const gap = 4;
-                    const extraLeftShift = 450;
+                    const extraLeftShift = 180;
 
                     let left;
                     let top = buttonRect.top - 8;

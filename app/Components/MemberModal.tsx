@@ -33,6 +33,7 @@ const MemberModal = ({
 
   return (
     // <div className="absolute top-55 right-0 left-70 w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-20 items-center mt-70 ml-30 h-[30vh] overflow-y-auto">
+    
     <div
       className="fixed w-80 bg-[#2c2c2c] text-white rounded-xl shadow-lg p-4 z-50 h-[30vh] overflow-y-auto mt-15"
       style={{
@@ -43,7 +44,7 @@ const MemberModal = ({
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-sm font-semibold">Members</h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-white">
+        <button onClick={onClose} className="text-gray-400 hover:text-white cursor-pointer">
           ✕
         </button>
       </div>
@@ -103,6 +104,7 @@ const MemberModal = ({
         ))}
       </div>
     </div>
+    
   );
 };
 

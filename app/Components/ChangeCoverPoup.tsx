@@ -66,9 +66,11 @@ const ChangeCoverPoup = ({
 
   return (
     // <div className="absolute top-0 left-60 z-50">
+      <div className="fixed inset-0 z-50" onClick={onClose}>
      <div
-      className="fixed z-50 mt-10"
+      className="absolute"
       style={{ top: position.top, left: position.left }}  
+          onClick={(e) => e.stopPropagation()}
     >
       <div className="bg-[#2b2b2b] w-[320px] rounded-md shadow-lg p-4 text-white relative">
         <h1 className="text-md font-semibold text-gray-300 text-center mb-3">
@@ -76,7 +78,7 @@ const ChangeCoverPoup = ({
         </h1>
 
         <button
-          className="absolute top-3 right-3 text-gray-400 hover:text-white"
+          className="absolute top-3 right-3 text-gray-400 hover:text-white cursor-pointer"
           onClick={onClose}
         >
           ✕
@@ -120,7 +122,7 @@ const ChangeCoverPoup = ({
 
         {/* REMOVE COVER */}
         <button
-          className="w-full text-sm text-gray-400 bg-[#1f1f1f] py-2 rounded mb-3"
+          className="w-full text-sm text-gray-400 bg-[#1f1f1f] py-2 rounded mb-3 cursor-pointer"
           onClick={() => {
             // setCoverColor(null);
             onRemoveCover();
@@ -170,7 +172,7 @@ const ChangeCoverPoup = ({
             );
           })}
         </div>
-        <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm">
+        <button className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm cursor-pointer">
           Enable colorblind friendly mode
         </button>
 
@@ -222,11 +224,12 @@ const ChangeCoverPoup = ({
         {/* UPLOAD */}
         <button
           onClick={() => document.getElementById("coverUpload")?.click()}
-          className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm"
+          className="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] py-2 rounded text-sm cursor-pointer"
         >
           Upload a cover image
         </button>
       </div>
+    </div>
     </div>
   );
 };
